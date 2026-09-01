@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 5,
+  "template": true,
+  "projectId": "station-transfer-studio",
+  "hostedUrl": "",
+  "releaseId": "openscene-webmcp-studio-2026-09-01",
+  "gitCommit": "",
+  "capturedAt": "",
+  "browser": "ChatGPT in-app browser",
+  "unauthenticatedHttpStatus": 0,
+  "accessMode": "public",
+  "releaseReady": false,
+  "usesTestDouble": true,
+  "sameFrameMutation": false,
+  "nativeEvidence": {
+    "source": "native-chatgpt",
+    "readableAtNormalPlayback": false,
+    "requestVisible": false,
+    "toolDiscoveryVisible": false,
+    "toolInputsVisible": false,
+    "structuredResultsVisible": false,
+    "pageMutationVisible": false,
+    "sameFrameMutation": false,
+    "conversationNamesMaskedOnly": true,
+    "syntheticPanel": false,
+    "testDouble": true
+  },
+  "cleanStart": {
+    "requestText": "This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.",
+    "requestVisibleBeforeToolEvidence": true,
+    "unrelatedConversationVisible": false,
+    "futureToolEvidenceVisibleAtRequest": false,
+    "projectId": "station-transfer-studio",
+    "pagePhaseAtStart": "source",
+    "pageRevisionAtStart": 0,
+    "pageStateIdAtStart": "station-transfer-studio:r0:source:source"
+  },
+  "toolNames": [
+    "openscene_inspect_project",
+    "openscene_configure_project",
+    "openscene_propose_branch",
+    "openscene_update_branch",
+    "openscene_preview_branch",
+    "openscene_undo_last_edit"
+  ],
+  "trace": [
+    {
+      "tool": "openscene_inspect_project",
+      "input": { "projectId": "station-transfer-studio" },
+      "result": {
+        "ok": true,
+        "revision": 0,
+        "stateId": "station-transfer-studio:r0:source:source",
+        "action": "inspect",
+        "projectId": "station-transfer-studio",
+        "previewPhase": "source"
+      }
+    },
+    {
+      "tool": "openscene_propose_branch",
+      "input": {
+        "branch": {
+          "id": "step_free",
+          "title": "Ask for the lift",
+          "learnerNeed": "The learner cannot use stairs and needs platform two.",
+          "learnerLine": "Wo ist der Aufzug zu Gleis zwei?",
+          "learnerLineTranslation": "Where is the lift to platform two?",
+          "responsePackId": "step_free",
+          "pauseAtSec": 2.04
+        },
+        "expectedRevision": 0
+      },
+      "result": {
+        "ok": true,
+        "revision": 1,
+        "stateId": "station-transfer-studio:r1:source:source",
+        "action": "add_branch",
+        "selectedBranchId": "step_free",
+        "selectedBranchStatus": "draft",
+        "selectedResponsePackId": "step_free",
+        "answerBoard": "LIFT → PLATFORM 2",
+        "changed": true
+      }
+    },
+    {
+      "tool": "openscene_preview_branch",
+      "input": { "branchId": "step_free", "expectedRevision": 1 },
+      "result": {
+        "ok": true,
+        "revision": 2,
+        "stateId": "station-transfer-studio:r2:step_free:waiting_for_learner",
+        "action": "preview_branch",
+        "selectedBranchId": "step_free",
+        "previewPhase": "waiting_for_learner",
+        "acceptedLine": false,
+        "changed": true
+      }
+    }
+  ],
+  "humanPractice": {
+    "action": "select_learner_line",
+    "toolCall": false,
+    "pageOwned": true,
+    "line": "Wo ist der Aufzug zu Gleis zwei?",
+    "lineTranslation": "Where is the lift to platform two?",
+    "beforeRevision": 2,
+    "afterRevision": 3,
+    "afterStateId": "station-transfer-studio:r3:step_free:response",
+    "branchId": "step_free",
+    "responsePackId": "step_free",
+    "answerBoard": "LIFT → PLATFORM 2",
+    "visibleInSameFrame": true
+  },
+  "humanKeep": {
+    "action": "keep_branch",
+    "toolCall": false,
+    "pageOwned": true,
+    "branchId": "step_free",
+    "beforeRevision": 3,
+    "afterRevision": 4,
+    "afterStateId": "station-transfer-studio:r4:step_free:response",
+    "status": "kept",
+    "visibleInSameFrame": true
+  },
+  "capture": {
+    "type": "native-chatgpt",
+    "file": "",
+    "sha256": "",
+    "durationSec": null,
+    "internalCuts": 0,
+    "startStateId": "station-transfer-studio:r0:source:source",
+    "endStateId": "station-transfer-studio:r4:step_free:response",
+    "sameFrameMutation": false
+  },
+  "evidenceFiles": [
+    {
+      "role": "native-chatgpt-capture",
+      "file": "",
+      "sha256": "",
+      "durationSec": null
+    },
+    {
+      "role": "proof-video",
+      "file": "",
+      "sha256": "",
+      "durationSec": null
+    }
+  ],
+  "captureTiming": {
+    "durationSec": null,
+    "learnerTurnVisibleAtSec": null,
+    "learnerActionAtSec": null,
+    "visibleResponseAtSec": null,
+    "humanKeepAtSec": null,
+    "milestones": [
+      { "id": "request", "atSec": null },
+      { "id": "tool_discovery", "atSec": null },
+      { "id": "inspect_call", "atSec": null },
+      { "id": "inspect_result", "atSec": null },
+      { "id": "propose_call", "atSec": null },
+      { "id": "propose_result", "atSec": null },
+      { "id": "preview_call", "atSec": null },
+      { "id": "preview_result", "atSec": null },
+      { "id": "learner_turn_visible", "atSec": null },
+      { "id": "learner_action", "atSec": null },
+      { "id": "response_visible", "atSec": null },
+      { "id": "human_keep", "atSec": null }
+    ]
+  },
+  "proofVideo": { "file": "", "sha256": "" }
+}

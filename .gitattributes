@@ -1,0 +1,5 @@
+.openai export-ignore
+.openai/** export-ignore
+.handoffs export-ignore
+.handoffs/** export-ignore
+HANDOFF.md export-ignore

@@ -1,0 +1,11 @@
+ACTUAL BROWSER API USED BY THIS PAGE
+
+document.modelContext.registerTool({
+  name: "openscene_choose_move",
+  description: "Prepare one allowed move; wait for the learner's line.",
+  inputSchema: { move, expectedRevision },
+  execute: async (input) => chooseMove(input),
+});
+
+INPUT   move + expectedRevision
+RESULT  stateId + revision + branch + visible changes

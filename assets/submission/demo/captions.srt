@@ -1,0 +1,44 @@
+1
+00:00:00,400 --> 00:00:11,900
+Before the trip, the learner rehearses one unfamiliar station
+exchange at home. Her train ends early. She still needs platform
+two, cannot use stairs, and does not know the German question.
+
+2
+00:00:13,000 --> 00:00:22,300
+She asks ChatGPT for help. On the live page, WebMCP exposes five
+tools and three responses written by the publisher.
+
+3
+00:00:23,600 --> 00:00:29,600
+ChatGPT checks the current cue, starts the rehearsal, and
+selects the step-free situation.
+
+4
+00:00:34,000 --> 00:00:40,900
+The video stops. The learner chooses the German line herself: Wo
+ist der Aufzug zum nächsten Gleis?
+
+5
+00:00:47,200 --> 00:00:54,100
+Her choice releases the scene. The station agent turns, presents
+the lift route, and gives the matching answer on screen.
+
+6
+00:01:00,733 --> 00:01:03,233
+She can compare another outcome.
+
+7
+00:01:08,333 --> 00:01:12,533
+Replay the original announcement, or undo and try again.
+
+8
+00:01:18,433 --> 00:01:28,633
+WebMCP gives ChatGPT a narrow way into the same page: page-owned
+tools, revisioned state, and visible results. The learner still
+chooses the words.
+
+9
+00:01:31,433 --> 00:01:40,033
+She leaves with one German phrase rehearsed before travel. The
+scenario is fictional, and the station partner is silent.

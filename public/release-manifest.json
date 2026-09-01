@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "openscene-webmcp-studio-2026-09-01",
+  "projectId": "station-transfer-studio",
+  "toolNames": [
+    "openscene_inspect_project",
+    "openscene_configure_project",
+    "openscene_propose_branch",
+    "openscene_update_branch",
+    "openscene_preview_branch",
+    "openscene_undo_last_edit"
+  ],
+  "artifacts": {
+    "public/rehearsal-prompt-v1.mp4": "e776f88f28093f87f1c57911cbe7943627e3dc037abb71648799910ca0bcc594",
+    "public/rehearsal-step-free-v1.mp4": "5143263b2914b22c8a63e5ed47e37a4e6f8bd00b38242e5aaabd1cab0746ffc2",
+    "public/rehearsal-next-train-v1.mp4": "de2be1099654353a2dbd56df9a576f098979718d8af42d24b90e71b0524e7da4",
+    "public/rehearsal-clarify-v1.mp4": "a64285c8f6f445917459add0ea1a8efd02d8c7f9e4330437290b4089496e71a0",
+    "public/openscene-social-card.png": "4162ea4e3134e998def3c58c9e868f432a874eb17f968499fd948ddc8b0a691f"
+  },
+  "acceptedEncoder": "ffmpeg 9.0.1",
+  "hashScope": "committed-delivery-artifact"
+}

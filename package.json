@@ -1,0 +1,59 @@
+{
+  "name": "openscene-webmcp",
+  "version": "0.1.0",
+  "description": "A WebMCP video studio that turns approved footage into tailored, human-rehearsed practice paths.",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "dev": "vinext dev",
+    "build": "vinext build",
+    "start": "wrangler dev --config dist/server/wrangler.json",
+    "test": "node --test tests/*.test.mjs",
+    "verify:rehearsal-media": "bash scripts/verify-rehearsal-media.sh",
+    "verify:release-manifest": "node scripts/verify-release-manifest.mjs",
+    "verify:release-links": "node scripts/check-release-links.mjs",
+    "verify:native-proof": "node scripts/verify-native-proof.mjs",
+    "verify:demo-delivery": "node scripts/verify-demo-delivery.mjs",
+    "verify:studio-demo-release": "node scripts/verify-studio-demo-release.mjs",
+    "build:public-source": "node scripts/build-public-source-snapshot.mjs",
+    "render:social-card": "node scripts/render-social-card.mjs",
+    "capture:submission-screenshots": "node scripts/capture-submission-screenshots.mjs",
+    "test:media-verifier": "bash scripts/test-rehearsal-media-verifier.sh",
+    "test:demo-delivery": "bash scripts/test-demo-delivery-verifier.sh",
+    "test:demo-release-gate": "bash scripts/test-demo-release-gate.sh",
+    "test:e2e": "playwright test",
+    "lint": "oxlint",
+    "lint:check": "oxlint --deny-warnings",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check .",
+    "verify:local-release": "bash scripts/verify-local-release.sh"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-server-dom-webpack": "19.2.8",
+    "vinext": "1.0.0-beta.8"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@cloudflare/vite-plugin": "1.54.2",
+    "@cloudflare/workers-types": "5.20260829.1",
+    "@openai/sites-vite-plugin": "0.2.0",
+    "@playwright/test": "1.62.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.34",
+    "oxfmt": "0.61.0",
+    "oxlint": "1.76.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "typescript": "5.9.3",
+    "vite": "8.2.2",
+    "wrangler": "4.127.1"
+  },
+  "type": "module"
+}

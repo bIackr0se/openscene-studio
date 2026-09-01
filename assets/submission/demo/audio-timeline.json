@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "narrator": {
+    "voice": "Cedar",
+    "rate": 125,
+    "status": "release_candidate",
+    "releasePolicy": "approved_audio_input_required",
+    "provenance": "OpenAI text-to-speech Cedar, rendered as eight narrator passages; two replace a misheard character name with the same Cedar phrase 'the learner', and one passage is split at its original natural pause for visual alignment",
+    "role": "external_narrator",
+    "roomTone": {
+      "kind": "procedural_station_room_tone",
+      "amplitude": 0.016,
+      "seed": 31011
+    }
+  },
+  "sampleRate": 48000,
+  "segments": [
+    {
+      "name": "01-problem-to-step-free",
+      "video": "01-overlay.mp4",
+      "duration": 56.733333,
+      "response": {
+        "triggerCue": "learner-response",
+        "gestureOffsetSec": 2.04,
+        "learnerActionAtSec": 43.5867,
+        "visibleResponseAtSec": 45.6267,
+        "audio": "silent_branch_video",
+        "releaseCue": "scene-answer"
+      },
+      "cues": [
+        {
+          "id": "learner-practice",
+          "start": 0.4,
+          "end": 11.9,
+          "text": "Before the trip, the learner rehearses one unfamiliar station exchange at home. Her train ends early. She still needs platform two, cannot use stairs, and does not know the German question.",
+          "visualAnchor": "at_home_problem_before_chatgpt"
+        },
+        {
+          "id": "page-owned-moves",
+          "start": 13.0,
+          "end": 22.3,
+          "text": "She asks ChatGPT for help. On the live page, WebMCP exposes five tools and three responses written by the publisher.",
+          "visualAnchor": "native_tool_discovery"
+        },
+        {
+          "id": "agent-maps-need",
+          "start": 23.6,
+          "end": 29.6,
+          "text": "ChatGPT checks the current cue, starts the rehearsal, and selects the step-free situation.",
+          "visualAnchor": "native_tool_sequence"
+        },
+        {
+          "id": "learner-response",
+          "start": 34.0,
+          "end": 40.9,
+          "text": "The video stops. The learner chooses the German line herself: Wo ist der Aufzug zum nächsten Gleis?",
+          "visualAnchor": "learner_phrase_selection"
+        },
+        {
+          "id": "scene-answer",
+          "start": 47.2,
+          "end": 54.1,
+          "text": "Her choice releases the scene. The station agent turns, presents the lift route, and gives the matching answer on screen.",
+          "visualAnchor": "presented_lift_route"
+        }
+      ]
+    },
+    {
+      "name": "02-next-train-and-compare",
+      "video": "02-overlay.mp4",
+      "duration": 11.0,
+      "cues": [
+        {
+          "id": "compare-outcomes",
+          "start": 4.0,
+          "end": 6.5,
+          "text": "She can compare another outcome.",
+          "visualAnchor": "compare"
+        }
+      ]
+    },
+    {
+      "name": "03-clarify-and-replay",
+      "video": "03-overlay.mp4",
+      "duration": 10.0,
+      "cues": [
+        {
+          "id": "replay-and-undo",
+          "start": 0.6,
+          "end": 4.8,
+          "text": "Replay the original announcement, or undo and try again.",
+          "visualAnchor": "replay_then_undo"
+        }
+      ]
+    },
+    {
+      "name": "04-code-proof",
+      "video": "04-code-proof.mp4",
+      "duration": 13.0,
+      "cues": [
+        {
+          "id": "page-owned-tools",
+          "start": 0.7,
+          "end": 10.9,
+          "text": "WebMCP gives ChatGPT a narrow way into the same page: page-owned tools, revisioned state, and visible results. The learner still chooses the words.",
+          "visualAnchor": "code"
+        }
+      ]
+    },
+    {
+      "name": "05-outro",
+      "video": "05-outro.mp4",
+      "duration": 10.0,
+      "cues": [
+        {
+          "id": "learner-takes-away",
+          "start": 0.7,
+          "end": 9.3,
+          "text": "She leaves with one German phrase rehearsed before travel. The scenario is fictional, and the station partner is silent.",
+          "visualAnchor": "outro"
+        }
+      ]
+    }
+  ]
+}
