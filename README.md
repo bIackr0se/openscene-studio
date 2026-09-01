@@ -1,6 +1,6 @@
 # OpenScene
 
-[Live app](https://openscene-webmcp.jijou-leo40.chatgpt.site) · [Public source](https://github.com/bIackr0se/openscene-studio)
+[Live app](https://openscene-webmcp.jijou-leo40.chatgpt.site) · [MIT license](LICENSE)
 
 Asking for help in another language is hard, especially when a passenger cannot use stairs, hear an announcement, or read a sign.
 

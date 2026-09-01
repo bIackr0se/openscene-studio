@@ -81,10 +81,10 @@ Source imagery was generated with OpenAI image generation. Motion is an editoria
 - [x] Private Studio prototype implements six real WebMCP tools and a human-gated rehearsal loop.
 - [x] Proposal and update contracts reject agent-supplied response copy, boards, media, and answer timing.
 - [x] Complete Studio unit, browser, accessibility, responsive, media, and production-build gates pass on the frozen candidate.
-- [ ] Final deployment is reachable without the owner's session.
+- [x] Final deployment is reachable without the owner's session.
 - [ ] Native ChatGPT discovery and invocation work against the final hosted page.
 - [ ] The final demo shows the real request, tool discovery, proposal, approved response pack, learner line, filmed answer, and keep or undo action.
-- [ ] A public repository contains the shipped source, assets, instructions, tests, and a visible MIT license.
+- [x] A public repository contains the shipped source, assets, instructions, tests, and a visible MIT license.
 - [ ] Final screenshots come from the exact hosted release after the WebMCP check.
 - [ ] A public YouTube demo is under three minutes, has clear audio and English captions, and matches the hosted build.
 - [ ] Devpost contains the final live URL, repository URL, video URL, description, and images.
