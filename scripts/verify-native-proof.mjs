@@ -8,37 +8,34 @@ import { fileURLToPath } from 'node:url';
 
 import { EXPECTED_TOOL_NAMES } from './verify-release-manifest.mjs';
 
-export const NATIVE_PROOF_SCHEMA_VERSION = 5;
+export const NATIVE_PROOF_SCHEMA_VERSION = 7;
 export const EXPECTED_NATIVE_PROOF_RELEASE_ID =
   'openscene-webmcp-studio-2026-09-01';
 export const EXPECTED_STUDIO_PROJECT_ID = 'station-transfer-studio';
+export const EXPECTED_BRANCH_ID = 'ask_for_lift';
 export const EXPECTED_NATIVE_PROOF_REQUEST =
   'This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.';
 export const RELEASE_PROOF_REQUEST = EXPECTED_NATIVE_PROOF_REQUEST;
 export const PRIVATE_PREVIEW_PROOF_REQUEST = EXPECTED_NATIVE_PROOF_REQUEST;
 export const INITIAL_STATE_ID = `${EXPECTED_STUDIO_PROJECT_ID}:r0:source:source`;
 export const PROPOSED_STATE_ID = `${EXPECTED_STUDIO_PROJECT_ID}:r1:source:source`;
-export const PRACTICE_STATE_ID = `${EXPECTED_STUDIO_PROJECT_ID}:r2:step_free:waiting_for_learner`;
-export const RESPONSE_STATE_ID = `${EXPECTED_STUDIO_PROJECT_ID}:r3:step_free:response`;
-export const KEPT_STATE_ID = `${EXPECTED_STUDIO_PROJECT_ID}:r4:step_free:response`;
+export const PRACTICE_STATE_ID = `${EXPECTED_STUDIO_PROJECT_ID}:r2:${EXPECTED_BRANCH_ID}:waiting_for_learner`;
+export const RESPONSE_STATE_ID = `${EXPECTED_STUDIO_PROJECT_ID}:r3:${EXPECTED_BRANCH_ID}:response`;
+export const KEPT_STATE_ID = `${EXPECTED_STUDIO_PROJECT_ID}:r4:${EXPECTED_BRANCH_ID}:response`;
 export const EXPECTED_LEARNER_LINE = 'Wo ist der Aufzug zu Gleis zwei?';
 export const EXPECTED_LEARNER_LINE_TRANSLATION =
   'Where is the lift to platform two?';
 export const EXPECTED_ANSWER_BOARD = 'LIFT → PLATFORM 2';
 
-export const CLEAN_PROOF_MILESTONE_IDS = [
-  'request',
-  'tool_discovery',
-  'inspect_call',
-  'inspect_result',
-  'propose_call',
-  'propose_result',
-  'preview_call',
-  'preview_result',
+export const PROOF_VIDEO_MILESTONE_IDS = [
+  'exact_request',
+  'native_tool_trace',
+  'draft_visible',
   'learner_turn_visible',
   'learner_action',
   'response_visible',
   'human_keep',
+  'tool_contract',
 ];
 
 const PROOF_MODES = new Set(['release', 'private-preview']);
@@ -47,16 +44,14 @@ const GIT_SHA_PATTERN = /^[a-f0-9]{40}$/;
 const TIMING_TOLERANCE_SEC = 0.1;
 const MIN_CAPTURE_DURATION_SEC = 30;
 const MAX_CAPTURE_DURATION_SEC = 180;
-const MIN_REQUEST_HOLD_SEC = 2;
-const MIN_DISCOVERY_HOLD_SEC = 1.5;
-const MIN_RESULT_HOLD_SEC = 1;
-const MIN_PROPOSAL_RESULT_HOLD_SEC = 2.5;
-const MIN_BRANCH_HOLD_SEC = 2;
-const MIN_PRACTICE_SETUP_HOLD_SEC = 3;
+const MIN_REQUEST_TO_NATIVE_SEC = 4;
+const MIN_NATIVE_TO_DRAFT_SEC = 4;
+const MIN_DRAFT_TO_PRACTICE_SEC = 3;
 const MIN_LEARNER_LINE_HOLD_SEC = 3;
 const MIN_RESPONSE_DELAY_SEC = 1.2;
 const MIN_RESPONSE_HOLD_SEC = 4;
-const MIN_KEEP_HOLD_SEC = 2;
+const MIN_KEEP_TO_CONTRACT_SEC = 2;
+const MIN_CONTRACT_HOLD_SEC = 2;
 const VIDEO_PROBE_CACHE = new Map();
 
 function isRecord(value) {
@@ -184,9 +179,10 @@ function resolveEvidenceFile(projectRoot, filePath) {
 
 function expectedBranch() {
   return {
-    id: 'step_free',
+    id: EXPECTED_BRANCH_ID,
     title: 'Ask for the lift',
-    learnerNeed: 'The learner cannot use stairs and needs platform two.',
+    learnerNeed:
+      'The learner cannot use stairs and needs the lift to reach platform two.',
     learnerLine: EXPECTED_LEARNER_LINE,
     learnerLineTranslation: EXPECTED_LEARNER_LINE_TRANSLATION,
     responsePackId: 'step_free',
@@ -216,7 +212,7 @@ function expectedTrace() {
         revision: 1,
         stateId: PROPOSED_STATE_ID,
         action: 'add_branch',
-        selectedBranchId: 'step_free',
+        selectedBranchId: EXPECTED_BRANCH_ID,
         selectedBranchStatus: 'draft',
         selectedResponsePackId: 'step_free',
         answerBoard: EXPECTED_ANSWER_BOARD,
@@ -225,13 +221,13 @@ function expectedTrace() {
     },
     {
       tool: 'openscene_preview_branch',
-      input: { branchId: 'step_free', expectedRevision: 1 },
+      input: { branchId: EXPECTED_BRANCH_ID, expectedRevision: 1 },
       result: {
         ok: true,
         revision: 2,
         stateId: PRACTICE_STATE_ID,
         action: 'preview_branch',
-        selectedBranchId: 'step_free',
+        selectedBranchId: EXPECTED_BRANCH_ID,
         previewPhase: 'waiting_for_learner',
         acceptedLine: false,
         changed: true,
@@ -250,7 +246,7 @@ function expectedHumanPractice() {
     beforeRevision: 2,
     afterRevision: 3,
     afterStateId: RESPONSE_STATE_ID,
-    branchId: 'step_free',
+    branchId: EXPECTED_BRANCH_ID,
     responsePackId: 'step_free',
     answerBoard: EXPECTED_ANSWER_BOARD,
     visibleInSameFrame: true,
@@ -262,7 +258,7 @@ function expectedHumanKeep() {
     action: 'keep_branch',
     toolCall: false,
     pageOwned: true,
-    branchId: 'step_free',
+    branchId: EXPECTED_BRANCH_ID,
     beforeRevision: 3,
     afterRevision: 4,
     afterStateId: KEPT_STATE_ID,
@@ -295,16 +291,39 @@ function validateNativeEvidence(proof, findings) {
   }
   for (const field of [
     'readableAtNormalPlayback',
-    'requestVisible',
-    'toolDiscoveryVisible',
+    'requestContextVisibleInCapture',
+    'toolTraceVisible',
     'toolInputsVisible',
-    'structuredResultsVisible',
     'pageMutationVisible',
     'sameFrameMutation',
   ]) {
     if (evidence[field] !== true) {
       findings.push(`nativeEvidence.${field} must be true`);
     }
+  }
+  const hiddenNativeFields = [
+    [
+      'requestVisibleInCapture',
+      'the exact request is shown by an editorial card, not the native capture',
+    ],
+    [
+      'toolNamesVisibleInCapture',
+      'the six-tool list is shown by editorial implementation proof, not the native capture',
+    ],
+    [
+      'structuredResultsVisibleInCapture',
+      'structured results are machine-recorded evidence, not visible native result cards',
+    ],
+  ];
+  for (const [field, reason] of hiddenNativeFields) {
+    if (evidence[field] !== false) {
+      findings.push(`nativeEvidence.${field} must be false: ${reason}`);
+    }
+  }
+  if (Object.hasOwn(evidence, 'structuredResultsVisible')) {
+    findings.push(
+      'nativeEvidence.structuredResultsVisible is obsolete; use structuredResultsVisibleInCapture',
+    );
   }
   if (evidence.conversationNamesMaskedOnly !== true) {
     findings.push(
@@ -318,30 +337,70 @@ function validateNativeEvidence(proof, findings) {
   }
 }
 
-function validateCleanStart(proof, findings) {
-  const cleanStart = proof?.cleanStart;
-  if (!isRecord(cleanStart)) {
-    findings.push('cleanStart is required');
+function validateRequestEvidence(proof, findings) {
+  const evidence = proof?.requestEvidence;
+  if (!isRecord(evidence)) {
+    findings.push('requestEvidence is required');
     return;
   }
   if (
-    cleanStart.requestText !== EXPECTED_NATIVE_PROOF_REQUEST ||
-    cleanStart.requestVisibleBeforeToolEvidence !== true ||
-    cleanStart.unrelatedConversationVisible !== false ||
-    cleanStart.futureToolEvidenceVisibleAtRequest !== false
+    evidence.exactText !== EXPECTED_NATIVE_PROOF_REQUEST ||
+    evidence.source !== 'editorial-card-transcribed-from-native-task' ||
+    evidence.visibleBeforeNativeToolEvidence !== true ||
+    evidence.faithfulToNativeTask !== true ||
+    evidence.syntheticNativeUi !== false
   ) {
     findings.push(
-      'cleanStart must show the exact request before future native tool evidence',
+      'requestEvidence must identify the exact faithful editorial request card before native evidence',
+    );
+  }
+}
+
+function validateCaptureStart(proof, findings) {
+  const captureStart = proof?.captureStart;
+  if (!isRecord(captureStart)) {
+    findings.push('captureStart is required');
+    return;
+  }
+  if (
+    captureStart.requestAlreadySubmitted !== true ||
+    captureStart.requestVisibleAtCaptureStart !== false ||
+    captureStart.requestContextVisibleAtCaptureStart !== true ||
+    captureStart.unrelatedConversationVisible !== false ||
+    captureStart.futureToolEvidenceVisibleAtCaptureStart !== false
+  ) {
+    findings.push(
+      'captureStart must honestly record that the request is collapsed while its context remains visible',
     );
   }
   if (
-    cleanStart.projectId !== EXPECTED_STUDIO_PROJECT_ID ||
-    cleanStart.pagePhaseAtStart !== 'source' ||
-    cleanStart.pageRevisionAtStart !== 0 ||
-    cleanStart.pageStateIdAtStart !== INITIAL_STATE_ID
+    captureStart.projectId !== EXPECTED_STUDIO_PROJECT_ID ||
+    captureStart.pagePhaseAtStart !== 'source' ||
+    captureStart.pageRevisionAtStart !== 0 ||
+    captureStart.pageStateIdAtStart !== INITIAL_STATE_ID
   ) {
     findings.push(
-      'cleanStart must bind the visible Studio page to the source revision-zero state',
+      'captureStart must bind the visible Studio page to the source revision-zero state',
+    );
+  }
+}
+
+function validateMachineRecordedTrace(proof, findings) {
+  const trace = proof?.machineRecordedTrace;
+  if (!isRecord(trace)) {
+    findings.push(
+      'machineRecordedTrace is required for structured native results',
+    );
+    return;
+  }
+  if (
+    trace.source !== 'native-tool-execution-record' ||
+    trace.complete !== true ||
+    trace.verified !== true ||
+    trace.visibleInCapture !== false
+  ) {
+    findings.push(
+      'machineRecordedTrace must identify a complete verified trace that is not visible as native result cards',
     );
   }
 }
@@ -523,9 +582,9 @@ function validateCaptureEvidence(projectRoot, proof, findings) {
 }
 
 function validateTiming(proof, findings) {
-  const timing = proof?.captureTiming;
+  const timing = proof?.proofVideoTiming;
   if (!isRecord(timing)) {
-    findings.push('captureTiming is required');
+    findings.push('proofVideoTiming is required');
     return;
   }
   const duration = Number(timing.durationSec);
@@ -535,7 +594,7 @@ function validateTiming(proof, findings) {
     duration > MAX_CAPTURE_DURATION_SEC
   ) {
     findings.push(
-      `captureTiming.durationSec must be between ${MIN_CAPTURE_DURATION_SEC} and ${MAX_CAPTURE_DURATION_SEC} seconds`,
+      `proofVideoTiming.durationSec must be between ${MIN_CAPTURE_DURATION_SEC} and ${MAX_CAPTURE_DURATION_SEC} seconds`,
     );
     return;
   }
@@ -543,9 +602,9 @@ function validateTiming(proof, findings) {
   const milestoneIds = Array.isArray(milestones)
     ? milestones.map((milestone) => milestone?.id)
     : [];
-  if (!sameJson(milestoneIds, CLEAN_PROOF_MILESTONE_IDS)) {
+  if (!sameJson(milestoneIds, PROOF_VIDEO_MILESTONE_IDS)) {
     findings.push(
-      'captureTiming.milestones must contain every Studio proof milestone exactly once and in order',
+      'proofVideoTiming.milestones must contain every Studio proof milestone exactly once and in order',
     );
     return;
   }
@@ -560,7 +619,7 @@ function validateTiming(proof, findings) {
     )
   ) {
     findings.push(
-      'captureTiming milestone times must be finite, in bounds, and strictly increasing',
+      'proofVideoTiming milestone times must be finite, in bounds, and strictly increasing',
     );
     return;
   }
@@ -574,53 +633,28 @@ function validateTiming(proof, findings) {
   ];
   for (const [field, id] of aliases) {
     if (!closeTo(Number(timing[field]), at.get(id))) {
-      findings.push(`captureTiming.${field} must match the ${id} milestone`);
+      findings.push(`proofVideoTiming.${field} must match the ${id} milestone`);
     }
   }
 
   const holdRequirements = [
-    ['request', 'tool_discovery', MIN_REQUEST_HOLD_SEC, 'request hold'],
     [
-      'tool_discovery',
-      'inspect_call',
-      MIN_DISCOVERY_HOLD_SEC,
-      'tool discovery hold',
+      'exact_request',
+      'native_tool_trace',
+      MIN_REQUEST_TO_NATIVE_SEC,
+      'request-to-native interval',
     ],
     [
-      'inspect_call',
-      'inspect_result',
-      MIN_RESULT_HOLD_SEC,
-      'inspect result hold',
+      'native_tool_trace',
+      'draft_visible',
+      MIN_NATIVE_TO_DRAFT_SEC,
+      'native-trace hold',
     ],
     [
-      'inspect_result',
-      'propose_call',
-      MIN_RESULT_HOLD_SEC,
-      'inspect-to-propose hold',
-    ],
-    [
-      'propose_call',
-      'propose_result',
-      MIN_PROPOSAL_RESULT_HOLD_SEC,
-      'proposal result hold',
-    ],
-    [
-      'propose_result',
-      'preview_call',
-      MIN_BRANCH_HOLD_SEC,
-      'draft branch hold',
-    ],
-    [
-      'preview_call',
-      'preview_result',
-      MIN_RESULT_HOLD_SEC,
-      'preview result hold',
-    ],
-    [
-      'preview_result',
+      'draft_visible',
       'learner_turn_visible',
-      MIN_PRACTICE_SETUP_HOLD_SEC,
-      'practice setup hold',
+      MIN_DRAFT_TO_PRACTICE_SEC,
+      'draft-to-practice interval',
     ],
     [
       'learner_turn_visible',
@@ -635,19 +669,25 @@ function validateTiming(proof, findings) {
       'learner-to-response delay',
     ],
     ['response_visible', 'human_keep', MIN_RESPONSE_HOLD_SEC, 'response hold'],
+    [
+      'human_keep',
+      'tool_contract',
+      MIN_KEEP_TO_CONTRACT_SEC,
+      'keep-to-contract interval',
+    ],
   ];
   for (const [from, to, minimum, label] of holdRequirements) {
     const gap = at.get(to) - at.get(from);
     if (!Number.isFinite(gap) || gap + TIMING_TOLERANCE_SEC < minimum) {
       findings.push(
-        `captureTiming ${label} must be at least ${minimum} seconds`,
+        `proofVideoTiming ${label} must be at least ${minimum} seconds`,
       );
     }
   }
-  const finalHold = duration - at.get('human_keep');
-  if (finalHold + TIMING_TOLERANCE_SEC < MIN_KEEP_HOLD_SEC) {
+  const finalHold = duration - at.get('tool_contract');
+  if (finalHold + TIMING_TOLERANCE_SEC < MIN_CONTRACT_HOLD_SEC) {
     findings.push(
-      `captureTiming final keep-result hold must be at least ${MIN_KEEP_HOLD_SEC} seconds`,
+      `proofVideoTiming final contract hold must be at least ${MIN_CONTRACT_HOLD_SEC} seconds`,
     );
   }
 }
@@ -733,7 +773,9 @@ export function validateNativeProof(
   }
 
   validateNativeEvidence(proof, findings);
-  validateCleanStart(proof, findings);
+  validateRequestEvidence(proof, findings);
+  validateCaptureStart(proof, findings);
+  validateMachineRecordedTrace(proof, findings);
   validateTrace(proof, findings);
   validateHumanActions(proof, findings);
   validateCaptureEvidence(projectRoot, proof, findings);

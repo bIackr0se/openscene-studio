@@ -15,6 +15,7 @@ import {
   EXPECTED_ANSWER_BOARD,
   EXPECTED_LEARNER_LINE,
   EXPECTED_REQUEST,
+  EXPECTED_STUDIO_EVIDENCE_MARKERS,
   EXPECTED_STUDIO_TOOL_NAMES,
   NATIVE_PROOF_SCHEMA_VERSION,
   REQUIRED_STUDIO_EVIDENCE_MARKERS,
@@ -38,7 +39,7 @@ execFileSync(
     '-f',
     'lavfi',
     '-i',
-    'color=c=0x102523:s=1440x900:r=30',
+    'color=c=0x102523:s=1440x810:r=30',
     '-f',
     'lavfi',
     '-i',
@@ -93,12 +94,13 @@ function copyFixtureMedia(root) {
   copyFileSync(NARRATION_SOURCE, join(root, 'narration.wav'));
 }
 
-function cleanStart() {
+function captureStart() {
   return {
-    requestText: EXPECTED_REQUEST,
-    requestVisibleBeforeToolEvidence: true,
+    requestAlreadySubmitted: true,
+    requestVisibleAtCaptureStart: false,
+    requestContextVisibleAtCaptureStart: true,
     unrelatedConversationVisible: false,
-    futureToolEvidenceVisibleAtRequest: false,
+    futureToolEvidenceVisibleAtCaptureStart: false,
     projectId: STUDIO_PROJECT_ID,
     pagePhaseAtStart: 'source',
     pageRevisionAtStart: 0,
@@ -112,18 +114,14 @@ function makeNativeProof(root) {
   const captureHash = sha256(capturePath);
   const proofVideoHash = sha256(proofVideoPath);
   const milestones = [
-    ['request', 0],
-    ['tool_discovery', 3],
-    ['inspect_call', 5],
-    ['inspect_result', 7],
-    ['propose_call', 9],
-    ['propose_result', 12],
-    ['preview_call', 15],
-    ['preview_result', 17],
-    ['learner_turn_visible', 21],
-    ['learner_action', 25],
-    ['response_visible', 27],
-    ['human_keep', 32],
+    ['exact_request', 0],
+    ['native_tool_trace', 8],
+    ['draft_visible', 16],
+    ['learner_turn_visible', 24],
+    ['learner_action', 28],
+    ['response_visible', 30],
+    ['human_keep', 36],
+    ['tool_contract', 40],
   ].map(([id, atSec]) => ({ id, atSec }));
   return {
     schemaVersion: NATIVE_PROOF_SCHEMA_VERSION,
@@ -141,17 +139,32 @@ function makeNativeProof(root) {
     nativeEvidence: {
       source: 'native-chatgpt',
       readableAtNormalPlayback: true,
-      requestVisible: true,
-      toolDiscoveryVisible: true,
+      requestVisibleInCapture: false,
+      requestContextVisibleInCapture: true,
+      toolNamesVisibleInCapture: false,
+      toolTraceVisible: true,
       toolInputsVisible: true,
-      structuredResultsVisible: true,
+      structuredResultsVisibleInCapture: false,
       pageMutationVisible: true,
       sameFrameMutation: true,
       conversationNamesMaskedOnly: true,
       syntheticPanel: false,
       testDouble: false,
     },
-    cleanStart: cleanStart(),
+    requestEvidence: {
+      source: 'editorial-card-transcribed-from-native-task',
+      exactText: EXPECTED_REQUEST,
+      visibleBeforeNativeToolEvidence: true,
+      faithfulToNativeTask: true,
+      syntheticNativeUi: false,
+    },
+    captureStart: captureStart(),
+    machineRecordedTrace: {
+      source: 'native-tool-execution-record',
+      complete: true,
+      verified: true,
+      visibleInCapture: false,
+    },
     toolNames: [...EXPECTED_STUDIO_TOOL_NAMES],
     trace: [
       {
@@ -170,10 +183,10 @@ function makeNativeProof(root) {
         tool: 'openscene_propose_branch',
         input: {
           branch: {
-            id: 'step_free',
+            id: 'ask_for_lift',
             title: 'Ask for the lift',
             learnerNeed:
-              'The learner cannot use stairs and needs platform two.',
+              'The learner cannot use stairs and needs the lift to reach platform two.',
             learnerLine: EXPECTED_LEARNER_LINE,
             learnerLineTranslation: 'Where is the lift to platform two?',
             responsePackId: 'step_free',
@@ -186,7 +199,7 @@ function makeNativeProof(root) {
           revision: 1,
           stateId: `${STUDIO_PROJECT_ID}:r1:source:source`,
           action: 'add_branch',
-          selectedBranchId: 'step_free',
+          selectedBranchId: 'ask_for_lift',
           selectedBranchStatus: 'draft',
           selectedResponsePackId: 'step_free',
           answerBoard: EXPECTED_ANSWER_BOARD,
@@ -195,13 +208,13 @@ function makeNativeProof(root) {
       },
       {
         tool: 'openscene_preview_branch',
-        input: { branchId: 'step_free', expectedRevision: 1 },
+        input: { branchId: 'ask_for_lift', expectedRevision: 1 },
         result: {
           ok: true,
           revision: 2,
-          stateId: `${STUDIO_PROJECT_ID}:r2:step_free:waiting_for_learner`,
+          stateId: `${STUDIO_PROJECT_ID}:r2:ask_for_lift:waiting_for_learner`,
           action: 'preview_branch',
-          selectedBranchId: 'step_free',
+          selectedBranchId: 'ask_for_lift',
           previewPhase: 'waiting_for_learner',
           acceptedLine: false,
           changed: true,
@@ -216,8 +229,8 @@ function makeNativeProof(root) {
       lineTranslation: 'Where is the lift to platform two?',
       beforeRevision: 2,
       afterRevision: 3,
-      afterStateId: `${STUDIO_PROJECT_ID}:r3:step_free:response`,
-      branchId: 'step_free',
+      afterStateId: `${STUDIO_PROJECT_ID}:r3:ask_for_lift:response`,
+      branchId: 'ask_for_lift',
       responsePackId: 'step_free',
       answerBoard: EXPECTED_ANSWER_BOARD,
       visibleInSameFrame: true,
@@ -226,10 +239,10 @@ function makeNativeProof(root) {
       action: 'keep_branch',
       toolCall: false,
       pageOwned: true,
-      branchId: 'step_free',
+      branchId: 'ask_for_lift',
       beforeRevision: 3,
       afterRevision: 4,
-      afterStateId: `${STUDIO_PROJECT_ID}:r4:step_free:response`,
+      afterStateId: `${STUDIO_PROJECT_ID}:r4:ask_for_lift:response`,
       status: 'kept',
       visibleInSameFrame: true,
     },
@@ -240,7 +253,7 @@ function makeNativeProof(root) {
       durationSec: 100,
       internalCuts: 0,
       startStateId: `${STUDIO_PROJECT_ID}:r0:source:source`,
-      endStateId: `${STUDIO_PROJECT_ID}:r4:step_free:response`,
+      endStateId: `${STUDIO_PROJECT_ID}:r4:ask_for_lift:response`,
       sameFrameMutation: true,
     },
     evidenceFiles: [
@@ -257,12 +270,12 @@ function makeNativeProof(root) {
         durationSec: 100,
       },
     ],
-    captureTiming: {
+    proofVideoTiming: {
       durationSec: 100,
-      learnerTurnVisibleAtSec: 21,
-      learnerActionAtSec: 25,
-      visibleResponseAtSec: 27,
-      humanKeepAtSec: 32,
+      learnerTurnVisibleAtSec: 24,
+      learnerActionAtSec: 28,
+      visibleResponseAtSec: 30,
+      humanKeepAtSec: 36,
       milestones,
     },
     proofVideo: { file: 'proof-video.mp4', sha256: proofVideoHash },
@@ -313,11 +326,25 @@ function makeFixture() {
       scenePartnerDialogue: false,
     },
     studioEvidence: {
-      source: 'native-chatgpt',
+      source: 'mixed-native-and-editorial',
       readableAtNormalPlayback: true,
       sameFrameMutation: true,
+      nativeCapture: {
+        source: 'native-chatgpt-capture',
+        requestContextVisibleInCapture: true,
+        requestVisibleInCapture: false,
+        toolNamesVisibleInCapture: false,
+        structuredResultsVisibleInCapture: false,
+        toolTraceVisible: true,
+        toolInputsVisible: true,
+        pageMutationVisible: true,
+        sameFrameMutation: true,
+      },
       markers: REQUIRED_STUDIO_EVIDENCE_MARKERS.map((id) => ({
         id,
+        atSec: EXPECTED_STUDIO_EVIDENCE_MARKERS[id].atSec,
+        kind: EXPECTED_STUDIO_EVIDENCE_MARKERS[id].kind,
+        surface: EXPECTED_STUDIO_EVIDENCE_MARKERS[id].surface,
         readable: true,
       })),
     },
@@ -340,7 +367,7 @@ test('controlled Studio release fixture passes the complete gate', () => {
   });
   assert.deepEqual(result.findings, []);
   assert.equal(result.media.video.width, 1440);
-  assert.equal(result.media.video.height, 900);
+  assert.equal(result.media.video.height, 810);
   assert.equal(result.media.audio.sample_rate, '48000');
   assert.equal(result.captions.length, 3);
 });
@@ -499,7 +526,7 @@ test('old native proof schema or a changed proof hash is rejected', () => {
     manifest: fixture.manifest,
   });
   assert.ok(
-    result.findings.some((finding) => /schemaVersion must be 5/.test(finding)),
+    result.findings.some((finding) => /schemaVersion must be 7/.test(finding)),
   );
 
   const hashMismatch = makeFixture();
@@ -535,6 +562,79 @@ test('placeholder links and an incomplete native evidence manifest are rejected'
   assert.ok(result.findings.some((finding) => /placeholder URL/.test(finding)));
   assert.ok(
     result.findings.some((finding) => /missing readable marker/.test(finding)),
+  );
+});
+
+test('Studio evidence rejects native claims for editorial request, learner action, discovery, or result cards', () => {
+  const fixture = makeFixture();
+  fixture.manifest.studioEvidence.nativeCapture.toolNamesVisibleInCapture = true;
+  fixture.manifest.studioEvidence.nativeCapture.structuredResultsVisibleInCapture = true;
+  fixture.manifest.studioEvidence.markers.find(
+    ({ id }) => id === 'native_chatgpt_request',
+  ).kind = 'native';
+  fixture.manifest.studioEvidence.markers.find(
+    ({ id }) => id === 'learner_line_selection',
+  ).kind = 'native';
+  const result = validateStudioDemoRelease({
+    projectRoot: fixture.root,
+    videoPath: 'studio-demo.mp4',
+    captionsPath: 'captions.srt',
+    manifest: fixture.manifest,
+  });
+  assert.ok(
+    result.findings.some(
+      (finding) =>
+        finding ===
+        'studioEvidence.nativeCapture.toolNamesVisibleInCapture must be false',
+    ),
+  );
+  assert.ok(
+    result.findings.some(
+      (finding) =>
+        finding ===
+        'studioEvidence.nativeCapture.structuredResultsVisibleInCapture must be false',
+    ),
+  );
+  assert.ok(
+    result.findings.some((finding) =>
+      /native_chatgpt_request must identify editorial request-card evidence/.test(
+        finding,
+      ),
+    ),
+  );
+  assert.ok(
+    result.findings.some((finding) =>
+      /learner_line_selection must identify editorial human-page-action evidence/.test(
+        finding,
+      ),
+    ),
+  );
+});
+
+test('Studio evidence requires the renamed six-tool implementation proof marker', () => {
+  const fixture = makeFixture();
+  fixture.manifest.studioEvidence.markers =
+    fixture.manifest.studioEvidence.markers
+      .filter(({ id }) => id !== 'six_tool_implementation_proof')
+      .concat({
+        id: 'six_tool_discovery',
+        atSec: 96.3,
+        kind: 'native',
+        surface: 'native-chatgpt-capture',
+        readable: true,
+      });
+  const result = validateStudioDemoRelease({
+    projectRoot: fixture.root,
+    videoPath: 'studio-demo.mp4',
+    captionsPath: 'captions.srt',
+    manifest: fixture.manifest,
+  });
+  assert.ok(
+    result.findings.some(
+      (finding) =>
+        finding ===
+        'studioEvidence is missing readable marker: six_tool_implementation_proof',
+    ),
   );
 });
 

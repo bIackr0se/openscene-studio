@@ -49,9 +49,20 @@ __pycache__/
 /assets/submission/demo/*.mp4
 /assets/submission/demo/*.manifest.json
 
+# final rendered Studio media and private manifest; the narration timeline,
+# captions, thumbnail, and reconstruction scripts remain tracked
+/assets/submission/studio-demo/*.wav
+/assets/submission/studio-demo/*.mp4
+/assets/submission/studio-demo/*.manifest.json
+
+# uninterrupted native-browser recordings stay local; public screenshots and
+# the proof schema remain tracked
+/assets/submission/studio-native-chatgpt-capture*.mp4
+
 # local native-browser evidence; the public record template remains tracked
 /assets/submission/native-webmcp-proof.json
 /assets/submission/native-webmcp-proof.mp4
+/assets/submission/studio-native-webmcp-proof.json
 
 # local task state
 /HANDOFF.md

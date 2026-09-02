@@ -132,3 +132,67 @@ test('release surfaces reject changed native proof evidence', () => {
     }).includes('native-proof record hash does not match its manifest'),
   );
 });
+
+test('release surfaces accept the Studio manifest and canonical trailing slash', () => {
+  const root = mkdtempSync(join(tmpdir(), 'openscene-studio-links-'));
+  mkdirSync(join(root, 'app'), { recursive: true });
+  mkdirSync(join(root, 'assets/submission/studio-demo'), { recursive: true });
+  writeFileSync(
+    join(root, 'SUBMISSION.md'),
+    `# Submission\n\n## Submission links\n\n- Live site: ${LINKS.liveUrl}/\n- Public repository: ${LINKS.repoUrl}\n- Public YouTube demo: ${LINKS.videoUrl}\n\n## Project name\n`,
+  );
+  writeFileSync(
+    join(root, 'app/layout.tsx'),
+    `metadataBase: new URL('${LINKS.liveUrl}')\n`,
+  );
+
+  const video = 'studio-video';
+  const captions = 'studio-captions';
+  const videoPath = join(root, 'assets/submission/studio-demo/final.mp4');
+  const captionsPath = join(root, 'assets/submission/studio-demo/captions.srt');
+  const proofPath = join(root, 'assets/submission/studio-proof.json');
+  writeFileSync(videoPath, video);
+  writeFileSync(captionsPath, captions);
+  const videoHash = createHash('sha256').update(video).digest('hex');
+  const proofRecord = `${JSON.stringify({
+    gitCommit: 'b'.repeat(40),
+    proofVideo: { sha256: videoHash },
+  })}\n`;
+  writeFileSync(proofPath, proofRecord);
+  const manifestPath = join(
+    root,
+    'assets/submission/studio-demo/release.manifest.json',
+  );
+  writeFileSync(
+    manifestPath,
+    `${JSON.stringify({
+      schemaVersion: 2,
+      links: {
+        live: `${LINKS.liveUrl}/`,
+        source: LINKS.repoUrl,
+        video: LINKS.videoUrl,
+      },
+      video: {
+        file: 'assets/submission/studio-demo/final.mp4',
+        sha256: videoHash,
+      },
+      captions: {
+        file: 'assets/submission/studio-demo/captions.srt',
+        sha256: createHash('sha256').update(captions).digest('hex'),
+      },
+      nativeProof: {
+        file: 'assets/submission/studio-proof.json',
+        sha256: createHash('sha256').update(proofRecord).digest('hex'),
+      },
+    })}\n`,
+  );
+
+  assert.deepEqual(
+    validateReleaseSurfaces(root, {
+      ...LINKS,
+      liveUrl: `${LINKS.liveUrl}/`,
+      demoManifestPath: 'assets/submission/studio-demo/release.manifest.json',
+    }),
+    [],
+  );
+});

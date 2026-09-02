@@ -16,6 +16,7 @@ import test from 'node:test';
 import { EXPECTED_TOOL_NAMES } from '../scripts/verify-release-manifest.mjs';
 import {
   EXPECTED_ANSWER_BOARD,
+  EXPECTED_BRANCH_ID,
   EXPECTED_LEARNER_LINE,
   EXPECTED_LEARNER_LINE_TRANSLATION,
   EXPECTED_NATIVE_PROOF_RELEASE_ID,
@@ -87,9 +88,10 @@ function makeTrace() {
       tool: 'openscene_propose_branch',
       input: {
         branch: {
-          id: 'step_free',
+          id: EXPECTED_BRANCH_ID,
           title: 'Ask for the lift',
-          learnerNeed: 'The learner cannot use stairs and needs platform two.',
+          learnerNeed:
+            'The learner cannot use stairs and needs the lift to reach platform two.',
           learnerLine: EXPECTED_LEARNER_LINE,
           learnerLineTranslation: EXPECTED_LEARNER_LINE_TRANSLATION,
           responsePackId: 'step_free',
@@ -102,7 +104,7 @@ function makeTrace() {
         revision: 1,
         stateId: PROPOSED_STATE_ID,
         action: 'add_branch',
-        selectedBranchId: 'step_free',
+        selectedBranchId: EXPECTED_BRANCH_ID,
         selectedBranchStatus: 'draft',
         selectedResponsePackId: 'step_free',
         answerBoard: EXPECTED_ANSWER_BOARD,
@@ -111,13 +113,13 @@ function makeTrace() {
     },
     {
       tool: 'openscene_preview_branch',
-      input: { branchId: 'step_free', expectedRevision: 1 },
+      input: { branchId: EXPECTED_BRANCH_ID, expectedRevision: 1 },
       result: {
         ok: true,
         revision: 2,
         stateId: PRACTICE_STATE_ID,
         action: 'preview_branch',
-        selectedBranchId: 'step_free',
+        selectedBranchId: EXPECTED_BRANCH_ID,
         previewPhase: 'waiting_for_learner',
         acceptedLine: false,
         changed: true,
@@ -135,18 +137,14 @@ function makeProof() {
   const captureHash = hashFile(capturePath);
   const proofHash = hashFile(proofPath);
   const milestones = [
-    ['request', 0],
-    ['tool_discovery', 3],
-    ['inspect_call', 5],
-    ['inspect_result', 7],
-    ['propose_call', 9],
-    ['propose_result', 12],
-    ['preview_call', 15],
-    ['preview_result', 17],
-    ['learner_turn_visible', 20],
-    ['learner_action', 24],
-    ['response_visible', 26],
-    ['human_keep', 32],
+    ['exact_request', 0],
+    ['native_tool_trace', 8],
+    ['draft_visible', 16],
+    ['learner_turn_visible', 24],
+    ['learner_action', 28],
+    ['response_visible', 30],
+    ['human_keep', 36],
+    ['tool_contract', 40],
   ].map(([id, atSec]) => ({ id, atSec }));
   return {
     root,
@@ -167,25 +165,41 @@ function makeProof() {
       nativeEvidence: {
         source: 'native-chatgpt',
         readableAtNormalPlayback: true,
-        requestVisible: true,
-        toolDiscoveryVisible: true,
+        requestVisibleInCapture: false,
+        requestContextVisibleInCapture: true,
+        toolNamesVisibleInCapture: false,
+        toolTraceVisible: true,
         toolInputsVisible: true,
-        structuredResultsVisible: true,
+        structuredResultsVisibleInCapture: false,
         pageMutationVisible: true,
         sameFrameMutation: true,
         conversationNamesMaskedOnly: true,
         syntheticPanel: false,
         testDouble: false,
       },
-      cleanStart: {
-        requestText: EXPECTED_NATIVE_PROOF_REQUEST,
-        requestVisibleBeforeToolEvidence: true,
+      requestEvidence: {
+        source: 'editorial-card-transcribed-from-native-task',
+        exactText: EXPECTED_NATIVE_PROOF_REQUEST,
+        visibleBeforeNativeToolEvidence: true,
+        faithfulToNativeTask: true,
+        syntheticNativeUi: false,
+      },
+      captureStart: {
+        requestAlreadySubmitted: true,
+        requestVisibleAtCaptureStart: false,
+        requestContextVisibleAtCaptureStart: true,
         unrelatedConversationVisible: false,
-        futureToolEvidenceVisibleAtRequest: false,
+        futureToolEvidenceVisibleAtCaptureStart: false,
         projectId: EXPECTED_STUDIO_PROJECT_ID,
         pagePhaseAtStart: 'source',
         pageRevisionAtStart: 0,
         pageStateIdAtStart: INITIAL_STATE_ID,
+      },
+      machineRecordedTrace: {
+        source: 'native-tool-execution-record',
+        complete: true,
+        verified: true,
+        visibleInCapture: false,
       },
       toolNames: [...EXPECTED_TOOL_NAMES],
       trace: makeTrace(),
@@ -198,7 +212,7 @@ function makeProof() {
         beforeRevision: 2,
         afterRevision: 3,
         afterStateId: RESPONSE_STATE_ID,
-        branchId: 'step_free',
+        branchId: EXPECTED_BRANCH_ID,
         responsePackId: 'step_free',
         answerBoard: EXPECTED_ANSWER_BOARD,
         visibleInSameFrame: true,
@@ -207,7 +221,7 @@ function makeProof() {
         action: 'keep_branch',
         toolCall: false,
         pageOwned: true,
-        branchId: 'step_free',
+        branchId: EXPECTED_BRANCH_ID,
         beforeRevision: 3,
         afterRevision: 4,
         afterStateId: KEPT_STATE_ID,
@@ -238,12 +252,12 @@ function makeProof() {
           durationSec: 100,
         },
       ],
-      captureTiming: {
+      proofVideoTiming: {
         durationSec: 100,
-        learnerTurnVisibleAtSec: 20,
-        learnerActionAtSec: 24,
-        visibleResponseAtSec: 26,
-        humanKeepAtSec: 32,
+        learnerTurnVisibleAtSec: 24,
+        learnerActionAtSec: 28,
+        visibleResponseAtSec: 30,
+        humanKeepAtSec: 36,
         milestones,
       },
       proofVideo: { file: 'proof-video.mp4', sha256: proofHash },
@@ -312,7 +326,7 @@ test('native proof rejects the old schema, project, and tool contract', () => {
   proof.projectId = 'early-termination-transfer';
   proof.toolNames = ['openscene_inspect_rehearsal'];
   const findings = validateNativeProof(root, proof);
-  assert.ok(findings.includes('schemaVersion must be 5'));
+  assert.ok(findings.includes('schemaVersion must be 7'));
   assert.ok(
     findings.includes('projectId must match the active Studio project'),
   );
@@ -326,7 +340,7 @@ test('native proof rejects the old schema, project, and tool contract', () => {
 test('native proof requires readable native evidence with a same-frame page mutation', () => {
   const { root, proof } = makeProof();
   proof.nativeEvidence.readableAtNormalPlayback = false;
-  proof.nativeEvidence.structuredResultsVisible = false;
+  proof.nativeEvidence.structuredResultsVisibleInCapture = true;
   proof.nativeEvidence.syntheticPanel = true;
   proof.sameFrameMutation = false;
   const findings = validateNativeProof(root, proof);
@@ -334,7 +348,9 @@ test('native proof requires readable native evidence with a same-frame page muta
     findings.includes('nativeEvidence.readableAtNormalPlayback must be true'),
   );
   assert.ok(
-    findings.includes('nativeEvidence.structuredResultsVisible must be true'),
+    findings.includes(
+      'nativeEvidence.structuredResultsVisibleInCapture must be false: structured results are machine-recorded evidence, not visible native result cards',
+    ),
   );
   assert.ok(
     findings.includes(
@@ -342,6 +358,51 @@ test('native proof requires readable native evidence with a same-frame page muta
     ),
   );
   assert.ok(findings.includes('sameFrameMutation must be true'));
+});
+
+test('native proof rejects a false native-request claim or a fake native card', () => {
+  const { root, proof } = makeProof();
+  proof.nativeEvidence.requestVisibleInCapture = true;
+  proof.requestEvidence.syntheticNativeUi = true;
+  const findings = validateNativeProof(root, proof);
+  assert.ok(
+    findings.includes(
+      'nativeEvidence.requestVisibleInCapture must be false: the exact request is shown by an editorial card, not the native capture',
+    ),
+  );
+  assert.ok(
+    findings.includes(
+      'requestEvidence must identify the exact faithful editorial request card before native evidence',
+    ),
+  );
+});
+
+test('native proof rejects false native discovery and result-card claims', () => {
+  const { root, proof } = makeProof();
+  proof.nativeEvidence.toolNamesVisibleInCapture = true;
+  proof.nativeEvidence.structuredResultsVisibleInCapture = true;
+  const findings = validateNativeProof(root, proof);
+  assert.ok(
+    findings.includes(
+      'nativeEvidence.toolNamesVisibleInCapture must be false: the six-tool list is shown by editorial implementation proof, not the native capture',
+    ),
+  );
+  assert.ok(
+    findings.includes(
+      'nativeEvidence.structuredResultsVisibleInCapture must be false: structured results are machine-recorded evidence, not visible native result cards',
+    ),
+  );
+});
+
+test('native proof requires the structured trace to remain machine-recorded', () => {
+  const { root, proof } = makeProof();
+  proof.machineRecordedTrace.visibleInCapture = true;
+  const findings = validateNativeProof(root, proof);
+  assert.ok(
+    findings.includes(
+      'machineRecordedTrace must identify a complete verified trace that is not visible as native result cards',
+    ),
+  );
 });
 
 test('native proof rejects response fields injected into the proposal', () => {
@@ -394,34 +455,36 @@ test('native proof requires a page-owned learner line and keep decision', () => 
 
 test('native proof rejects rushed reading holds and arbitrary durations', () => {
   const { root, proof } = makeProof();
-  proof.captureTiming.milestones[1].atSec = 1.5;
+  proof.proofVideoTiming.milestones[1].atSec = 3.5;
   const findings = validateNativeProof(root, proof);
   assert.ok(
-    findings.includes('captureTiming request hold must be at least 2 seconds'),
+    findings.includes(
+      'proofVideoTiming request-to-native interval must be at least 4 seconds',
+    ),
   );
 
   const short = makeProof();
-  short.proof.captureTiming.durationSec = 20;
+  short.proof.proofVideoTiming.durationSec = 20;
   assert.ok(
     validateNativeProof(short.root, short.proof).includes(
-      'captureTiming.durationSec must be between 30 and 180 seconds',
+      'proofVideoTiming.durationSec must be between 30 and 180 seconds',
     ),
   );
 });
 
 test('native proof requires timing aliases to match ordered milestones', () => {
   const { root, proof } = makeProof();
-  proof.captureTiming.visibleResponseAtSec = 26;
-  proof.captureTiming.milestones[10].atSec = 25;
+  proof.proofVideoTiming.visibleResponseAtSec = 30;
+  proof.proofVideoTiming.milestones[5].atSec = 29;
   const findings = validateNativeProof(root, proof);
   assert.ok(
     findings.includes(
-      'captureTiming.visibleResponseAtSec must match the response_visible milestone',
+      'proofVideoTiming.visibleResponseAtSec must match the response_visible milestone',
     ),
   );
   assert.ok(
     findings.includes(
-      'captureTiming learner-to-response delay must be at least 1.2 seconds',
+      'proofVideoTiming learner-to-response delay must be at least 1.2 seconds',
     ),
   );
 });

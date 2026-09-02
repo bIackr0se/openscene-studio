@@ -12,7 +12,7 @@ export const LOUDNESS_TOLERANCE_LU = 1;
 export const MAX_TRUE_PEAK_DBTP = -1;
 
 const EXPECTED_WIDTH = 1440;
-const EXPECTED_HEIGHT = 900;
+const EXPECTED_HEIGHT = 810;
 const EXPECTED_FRAME_RATE = 30;
 
 function finiteNumber(value) {

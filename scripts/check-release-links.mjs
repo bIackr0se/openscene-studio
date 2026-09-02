@@ -9,6 +9,18 @@ function hashFile(filePath) {
   return createHash('sha256').update(readFileSync(filePath)).digest('hex');
 }
 
+function isRecord(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function sameUrl(left, right) {
+  try {
+    return new URL(left).href === new URL(right).href;
+  } catch {
+    return false;
+  }
+}
+
 function parsedPublicHttps(value) {
   let parsed;
   try {
@@ -116,10 +128,13 @@ export function validateReleaseSurfaces(
 
   if (!existsSync(layoutPath)) {
     findings.push('app/layout.tsx is missing');
-  } else if (
-    !readFileSync(layoutPath, 'utf8').includes(`new URL('${liveUrl}')`)
-  ) {
-    findings.push('metadataBase does not match the live URL');
+  } else {
+    const metadataBase = readFileSync(layoutPath, 'utf8').match(
+      /metadataBase:\s*new URL\(['"]([^'"]+)['"]\)/,
+    )?.[1];
+    if (!metadataBase || !sameUrl(metadataBase, liveUrl)) {
+      findings.push('metadataBase does not match the live URL');
+    }
   }
 
   const manifestPath = resolveExistingFileInside(projectRoot, demoManifestPath);
@@ -129,15 +144,65 @@ export function validateReleaseSurfaces(
   }
 
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  const manifestRepository =
+    manifest.links?.repository ?? manifest.links?.source;
   if (manifest.releaseMode !== true) {
-    findings.push('final demo manifest was not built in release mode');
+    if (manifest.schemaVersion !== 2) {
+      findings.push('final demo manifest was not built in release mode');
+    }
   }
   if (
-    manifest.links?.live !== liveUrl ||
-    manifest.links?.repository !== repoUrl
+    !sameUrl(manifest.links?.live, liveUrl) ||
+    !sameUrl(manifestRepository, repoUrl) ||
+    (manifest.links?.video !== undefined &&
+      !sameUrl(manifest.links.video, videoUrl))
   ) {
     findings.push('final demo manifest links do not match release inputs');
   }
+
+  const isStudioManifest =
+    manifest.schemaVersion === 2 &&
+    isRecord(manifest.video) &&
+    isRecord(manifest.captions) &&
+    isRecord(manifest.nativeProof);
+
+  if (isStudioManifest) {
+    const artifacts = [
+      ['rendered final demo', manifest.video],
+      ['final captions', manifest.captions],
+      ['native-proof record', manifest.nativeProof],
+    ];
+    let proofRecordPath = null;
+    for (const [label, artifact] of artifacts) {
+      if (!/^[a-f0-9]{64}$/.test(artifact.sha256 ?? '')) {
+        findings.push(`final demo manifest has no ${label} hash`);
+        continue;
+      }
+      const artifactPath = resolveExistingFileInside(
+        projectRoot,
+        artifact.file ?? '',
+      );
+      if (!artifactPath) {
+        findings.push(`${label} is missing or escapes the project root`);
+      } else if (hashFile(artifactPath) !== artifact.sha256) {
+        findings.push(`${label} hash does not match its manifest`);
+      } else if (label === 'native-proof record') {
+        proofRecordPath = artifactPath;
+      }
+    }
+
+    if (proofRecordPath) {
+      const proofRecord = JSON.parse(readFileSync(proofRecordPath, 'utf8'));
+      if (!/^[a-f0-9]{40}$/.test(proofRecord.gitCommit ?? '')) {
+        findings.push('native-proof record has no full Git commit');
+      }
+      if (proofRecord.proofVideo?.sha256 !== manifest.video.sha256) {
+        findings.push('native-proof video hash does not match its manifest');
+      }
+    }
+    return findings;
+  }
+
   if (!/^[a-f0-9]{40}$/.test(manifest.gitCommit ?? '')) {
     findings.push('final demo manifest has no full Git commit');
   }

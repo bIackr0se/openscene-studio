@@ -1,0 +1,59 @@
+1
+00:00:00,500 --> 00:00:08,100
+Before changing trains in Germany, a passenger who cannot use stairs practises at home how to ask for the lift.
+
+2
+00:00:08,700 --> 00:00:15,200
+The existing station lesson explains platform two. It never teaches the lift question.
+
+3
+00:00:16,400 --> 00:00:22,800
+A trainer is preparing the lesson for this learner, who does not know the German words.
+
+4
+00:00:23,800 --> 00:00:35,100
+This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.
+
+5
+00:00:36,000 --> 00:00:43,600
+ChatGPT can translate the sentence. WebMCP adds the missing practice turn to this open video.
+
+6
+00:00:43,800 --> 00:00:51,300
+ChatGPT reads the open lesson, adds the lift practice, and opens its preview through the page's tools.
+
+7
+00:00:52,100 --> 00:00:58,200
+OpenScene supplies the approved words, filmed answer, route board, and timing.
+
+8
+00:00:59,000 --> 00:01:03,800
+The draft links the learner's need, German line, and pause.
+
+9
+00:01:04,800 --> 00:01:09,700
+During preview, the lesson stops before the answer and waits for the learner.
+
+10
+00:01:10,100 --> 00:01:13,800
+The learner selects the matching German line on the page.
+
+11
+00:01:14,200 --> 00:01:22,400
+Only then does the approved filmed response start, with the LIFT TO PLATFORM 2 board.
+
+12
+00:01:23,400 --> 00:01:29,400
+The learner can rehearse the exact exchange before the trip.
+
+13
+00:01:30,200 --> 00:01:36,100
+The trainer keeps the path. Undo remains, and every edit has a visible revision.
+
+14
+00:01:36,300 --> 00:01:43,400
+The page registers six narrow WebMCP tools. Filmed answers and timing stay page-approved.
+
+15
+00:01:43,500 --> 00:01:49,200
+This fictional lesson is for practice at home. It gives no live travel guidance.

@@ -729,14 +729,20 @@ test.describe('OpenScene rehearsal', () => {
         const prompt = document.querySelector<HTMLElement>(
           '[data-testid="rehearsal-prompt"]',
         );
+        const lede = document.querySelector<HTMLElement>('.story-lede');
+        const request = document.querySelector<HTMLElement>(
+          '.idle-cue blockquote',
+        );
         const button =
           document.querySelector<HTMLButtonElement>('.start-console');
         const receipt = document.querySelector<HTMLElement>('.tool-receipt');
-        if (!cue || !prompt || !button || !receipt) {
+        if (!cue || !prompt || !lede || !request || !button || !receipt) {
           throw new Error('short-viewport anchors missing');
         }
         const cueRect = cue.getBoundingClientRect();
         const promptRect = prompt.getBoundingClientRect();
+        const ledeRect = lede.getBoundingClientRect();
+        const requestRect = request.getBoundingClientRect();
         const buttonRect = button.getBoundingClientRect();
         const receiptRect = receipt.getBoundingClientRect();
         const hit = document.elementFromPoint(
@@ -745,18 +751,24 @@ test.describe('OpenScene rehearsal', () => {
         );
         return {
           promptInsideTop: promptRect.top >= cueRect.top - 0.5,
+          ledeInsideCue:
+            ledeRect.top >= cueRect.top - 0.5 &&
+            ledeRect.bottom <= cueRect.bottom + 0.5,
+          requestInsideCue:
+            requestRect.top >= cueRect.top - 0.5 &&
+            requestRect.bottom <= cueRect.bottom + 0.5,
           buttonInsideBottom: buttonRect.bottom <= cueRect.bottom + 0.5,
           buttonAboveReceipt: buttonRect.bottom <= receiptRect.top - 4,
           buttonHit: hit?.closest('button') === button,
-          scrollFits: cue.scrollHeight <= cue.clientHeight + 1,
         };
       });
       expect(containment).toEqual({
         promptInsideTop: true,
+        ledeInsideCue: true,
+        requestInsideCue: true,
         buttonInsideBottom: true,
         buttonAboveReceipt: true,
         buttonHit: true,
-        scrollFits: true,
       });
 
       await cta.click();

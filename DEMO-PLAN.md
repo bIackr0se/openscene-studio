@@ -1,82 +1,79 @@
-# OpenScene demo plan
+# OpenScene Studio demo plan
 
-## Jury promise
+## Single claim
 
-The film must make one complete claim visible: a trainer describes an accessibility need in ChatGPT, ChatGPT changes the video project already open on the page, the learner completes the missing line, and the trainer keeps or restores the cut.
+The film must let a first-time viewer follow one complete sequence: a trainer gives ChatGPT a learner's need, ChatGPT changes the video project already open on the page, the video waits for the learner's German line, the learner acts, and the trainer keeps or restores the change.
 
-The submission film must use a real ChatGPT WebMCP invocation against the final hosted build. Designed receipts may support that proof. They may not replace it.
+The station story is fictional and for at-home practice. It demonstrates one concrete need: a passenger cannot use stairs and does not know how to ask for the lift in German. The film must not imply live travel guidance or character perception.
 
-Target duration: 95 to 110 seconds. Hard ceiling: 2 minutes 20 seconds. The pace should feel calm enough to read every request, tool result, learner line, and answer board once at normal playback speed.
+## Final film record
 
-## Storyboard
+- File: `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`
+- Duration: 109.5 seconds
+- Video: H.264, 1440 × 810, 30 fps (16:9)
+- Audio: stereo AAC, 48 kHz, one external narrator
+- Captions: `assets/submission/studio-demo/captions.srt`, English sidecar captions
+- Scene partner: silent authored response footage, no lip-synced dialogue
+- Sound: no music, click track, generated room noise, or static
 
-| Time      | Picture                                                                                                                                                                                                                                                                                          | Narration or sound                                                                                                                                                   | Required understanding                                                       |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 0:00-0:10 | Full Studio video preview with the original station clip and two existing practice paths. No overlays for the first two seconds.                                                                                                                                                                 | “Asking for help in another language is hard, especially when a passenger cannot use stairs, hear an announcement, or read a sign.” Then one second of silence.      | Access needs and an unfamiliar language can compound.                        |
-| 0:10-0:20 | Slow push toward the practice path map. Hold the two existing paths long enough to count them.                                                                                                                                                                                                   | “This German lesson says the next train leaves from platform two, but never teaches how to ask for the lift.”                                                        | This prototype demonstrates one concrete accessibility need.                 |
-| 0:20-0:31 | Clean dual capture. ChatGPT begins with an empty task view beside the same Studio project. The trainer enters: “This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.” Hold the complete request for two seconds. | Read the request once, at a natural pace. Leave the final second silent.                                                                                             | The trainer gives ChatGPT a free-form learner need.                          |
-| 0:31-0:44 | Native tool discovery, project inspection, and `openscene_propose_branch`. Keep the exact `responsePackId: "step_free"`, expected revision, and structured result readable. The mint practice path appears in the same shot.                                                                     | “ChatGPT reads the open OpenScene project and selects the trainer's approved lift answer. OpenScene keeps the words, route board, video, and timing fixed.”          | WebMCP connects ChatGPT to the exact open project and its approved material. |
-| 0:44-0:53 | Move from dual capture into the Studio practice path editor. Show the learner need, German phrase, selected trainer-approved filmed answer, pause, and new page version.                                                                                                                         | “The draft adds the learner's need, the German phrase, and the pause before the filmed answer.” Then one second of silence.                                          | The ChatGPT edit has become a runnable part of the video lesson.             |
-| 0:53-1:04 | Real `openscene_preview_branch` call, then the preview stops on `PAUSED FOR THE LEARNER`. Hold the three phrase choices for at least three seconds.                                                                                                                                              | “When the trainer previews the path, the video stops before the answer. The learner must choose what to say.”                                                        | OpenScene waits for an actual learner action.                                |
-| 1:04-1:16 | Select one wrong phrase and hold the rejection for 1.5 seconds. Select the correct phrase. Leave the click and response onset silent. The filmed lift answer begins and the route board appears at its fixed time.                                                                               | After the wrong choice: “The wrong phrase leaves the answer locked.” After the route board appears: “The matching phrase starts the trainer-approved filmed answer.” | The learner's phrase directly controls whether the filmed answer starts.     |
-| 1:16-1:25 | Hold the learner phrase, filmed answer, `LIFT → PLATFORM 2` route board, and revision together.                                                                                                                                                                                                  | “Now the learner has practised the phrase inside the station situation, and the route board shows where the lift leads.”                                             | The learner finishes with a usable phrase and a visible answer.              |
-| 1:25-1:34 | Click `Keep path`. Show the trainer-approved state. Then show `Undo edit` restoring the earlier project, with both page versions readable.                                                                                                                                                       | “The trainer keeps the new path or restores the earlier lesson.”                                                                                                     | The trainer retains final authority and recovery.                            |
-| 1:34-1:42 | Clean code view showing the literal `document.modelContext.registerTool({ ... })`, the proposal schema with `responsePackId`, and the prohibited response fields absent.                                                                                                                         | “Six WebMCP tools let ChatGPT inspect and edit the same OpenScene project shown here.”                                                                               | The WebMCP implementation is real and bounded.                               |
-| 1:42-1:48 | Return to the full Studio composition with the new practice path selected. Quiet end title: `ADAPT THE LESSON WITHOUT FILMING IT AGAIN.`                                                                                                                                                         | “OpenScene can add other trainer-approved practice paths for mobility, hearing, language, or cognitive needs without filming the whole lesson again.”                | The station lesson demonstrates a broader video-authoring workflow.          |
+## Final sequence
 
-## Timing rules
+| Time          | Picture                                                                                                          | What the viewer should understand                                                                                                |
+| ------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 0:00–0:08.5   | A passenger who cannot use stairs needs to practise asking for the lift in German before a trip.                 | The real-life need is clear before the product appears.                                                                          |
+| 0:08.5–0:16.2 | The existing German lesson and its platform-two context.                                                         | The lesson explains where the train leaves but omits the lift question.                                                          |
+| 0:16.2–0:23.6 | The learner's need.                                                                                              | The learner cannot use stairs and does not know what to say in German.                                                           |
+| 0:23.6–0:35.6 | Editorial request card with the exact text sent to ChatGPT.                                                      | The trainer gives ChatGPT the learner's need and asks it to add the practice. A label identifies this card as editorial context. |
+| 0:35.6–0:43.4 | A concise explanation of the difference between a normal chat and WebMCP.                                        | WebMCP lets ChatGPT act on the OpenScene project already open on the page.                                                       |
+| 0:43.4–0:51.8 | Authentic privacy-cropped ChatGPT and OpenScene capture, marked as recorded live.                                | ChatGPT reads the open project, sends the exact branch inputs, and opens the new preview on the same page.                       |
+| 0:51.8–0:58.6 | The page-owned boundary.                                                                                         | OpenScene supplies the approved words, filmed answer, answer board, and timing.                                                  |
+| 0:58.6–1:08.4 | The new practice path in the Studio editor.                                                                      | The draft connects the learner need, German line, and pause to the approved response pack.                                       |
+| 1:08.4–1:15.2 | The preview stops before the response.                                                                           | The page waits for the learner's choice before it can release the approved answer.                                               |
+| 1:15.2–1:22.7 | A clearly labeled editorial human-action frame identifies the real page choice, followed by the native response. | The learner chooses `Wo ist der Aufzug zu Gleis zwei?`; only then does the filmed answer start.                                  |
+| 1:22.7–1:30.0 | The response and `LIFT → PLATFORM 2` board.                                                                      | The learner rehearses the exact exchange in the same scene.                                                                      |
+| 1:30.0–1:36.0 | The trainer keeps the path, with revision evidence.                                                              | A person remains responsible for the authored change.                                                                            |
+| 1:36.0–1:43.1 | Code and tool list.                                                                                              | The six tools are page-owned, narrow, and visible in the implementation.                                                         |
+| 1:43.1–1:49.5 | Final links and fictional/synthetic-media disclosure.                                                            | The viewer leaves with the live site, source repository, scope, and rights context.                                              |
 
-- Introduce one new idea per shot.
-- Hold a complete human request for at least 2 seconds after it finishes appearing.
-- Hold tool input and structured result for at least 2.5 seconds each at normal size.
-- Hold the new branch and page version together for at least 3 seconds.
-- Hold the learner choices for at least 3 seconds before any selection.
-- Leave 1.2 to 1.8 seconds of silence around the correct learner click and the first visible response movement.
-- Hold the answer board and response text for at least 4 seconds.
-- Leave 0.6 to 1.0 seconds between narration ideas. Do not stretch or slow individual words.
-- Use clean cuts or a 220 to 320 millisecond directional slide between the page, dual capture, and code view. Never crossfade two readable text surfaces.
-- Use one restrained 3 to 5 percent camera push per major beat. No parallax, shimmer, text scramble, or decorative looping motion.
-- Burn in concise English captions. Keep them to two lines and outside the WebMCP evidence area.
+The narration timing is recorded in `assets/submission/studio-demo/narration-timeline.json`. The English SRT follows the same cues. The request card and native capture are separate evidence surfaces, and the film labels each one.
 
-## Native ChatGPT capture
+## Native ChatGPT evidence
 
-The native proof starts from a clean task state. Conversation names and unrelated history may be cropped or blurred. The current request, tool discovery, tool inputs, structured results, and page consequence must remain unobscured.
+The native capture is authentic page-and-ChatGPT footage with a privacy crop. Conversation names and unrelated history are excluded. A small recorded-live label identifies the native footage in the film.
 
-Record one uninterrupted proof sequence:
+The capture begins with the real Studio project at source revision zero and shows the request context, project trace, exact inputs, the proposed `ask_for_lift` branch, the `step_free` response pack, the learner turn, the response after the real page choice, and the trainer's keep action. The click itself is too brief to read in the privacy crop, so the film inserts a clearly labeled editorial human-action frame that points to the exact line selected. It does not imitate native ChatGPT UI. The machine-readable proof record is `assets/submission/studio-native-webmcp-proof.json`.
 
-1. Open the final hosted Studio page beside ChatGPT.
-2. Enter the complete accessibility request.
-3. Show discovery of all six page tools.
-4. Show `openscene_inspect_project` at the current page version.
-5. Show `openscene_propose_branch` with `responsePackId: "step_free"`.
-6. Hold the structured result beside the mint branch and changed page version.
-7. Show `openscene_preview_branch` and the paused human-turn state.
-8. Complete the learner line on the page.
-9. Show the filmed response, answer board, and resulting revision.
+The opening editorial card repeats the real task request so the audience can understand the native sequence from its first frame. A label marks it as editorial context, separate from the native recording.
 
-If the native ChatGPT surface does not expose enough of the input and result to read, use a deliberate split composition that magnifies the native proof and the page state. Do not recreate, restyle, or simulate the ChatGPT evidence.
+## Timing and presentation rules
+
+- Introduce one idea per shot. Leave enough time to read each request, tool input, result, learner line, and answer board once at normal playback speed.
+- Hold the complete request for at least two seconds after it finishes appearing.
+- Hold the native project trace and exact inputs long enough to read the branch ID, `responsePackId`, and page version.
+- Hold the learner choices for at least three seconds before selection.
+- Leave a short quiet beat around the learner click and the first response movement. Do not insert pauses inside a spoken phrase.
+- Hold the answer board and response text for at least four seconds.
+- Use directional slides or clean cuts between major surfaces. Do not crossfade two readable text layers.
+- Use small camera pushes only when they improve attention. No shimmer, text scramble, parallax, or decorative looping motion.
+- Keep captions outside the WebMCP evidence area. The final film carries them as the English SRT sidecar.
 
 ## Voice and sound
 
-- Use one clear external narrator. The woman in the station video remains silent.
-- Prefer the most natural licensed narrator available for the final cut. A user recording is optional, not required for credibility.
-- Do not synthesize dialogue for the woman in the station video or imply lip synchronization.
-- Use clean silence for quiet visual beats. Do not generate room tone, hiss, or click effects.
-- Use the free local Superwhisper model only to check intelligibility and caption timing.
-- Reject any narration take with clipped consonants, doubled words, stutters, breathless pacing, or pauses inserted inside a phrase.
-- Run the public transcript through the anti-AI-writing gate before recording. Avoid slogan chains, contrast formulas, and narration that describes interface labels already visible on screen.
+Use one clear external narrator. The scene partner remains silent. Do not imply that the character hears, sees, or answers the learner. The final track has clean speech and deliberate space between ideas. The free local Superwhisper model is used only for intelligibility and caption-timing checks; no paid voice-to-text mode or account setting is required.
 
 ## Release gates
 
-Retain the current rehearsal videos and prior demo drafts only as private editing evidence. The Studio needs a new submission film.
+Before the video is uploaded, verify the exact candidate with:
 
-Do not record the final public cut until all of these pass on the frozen candidate:
+```bash
+npm run verify:local-release
+OPENSCENE_NATIVE_PROOF_RECORD=assets/submission/studio-native-webmcp-proof.json npm run verify:native-proof
+npm run verify:studio-demo-release -- \
+  --video assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4 \
+  --captions assets/submission/studio-demo/captions.srt \
+  --manifest assets/submission/studio-demo/release.manifest.json
+```
 
-- Studio state, WebMCP, browser, accessibility, responsive, media, type, lint, format, and production-build checks;
-- the final hosted page is reachable without the owner’s session;
-- a real native ChatGPT request discovers and invokes the six Studio tools;
-- the native capture and page show the same revision, branch ID, response pack, and preview state;
-- the final live site and repository URLs replace every pending placeholder;
-- the video has clear audio, English captions, and no unlicensed music, marks, or watermarks.
+The final film is public at https://youtu.be/j5Htg-fsE4E with the verified English caption track and release thumbnail. The Devpost form may be prepared with the live URL, public repository, video URL, description, and five release images, but the final Submit action is held for the owner.
 
-Deployment, source publication, video upload, and Devpost submission require explicit authorization.
+The proof record and source capture are private local release evidence. The public repository includes only the redacted contract template.
