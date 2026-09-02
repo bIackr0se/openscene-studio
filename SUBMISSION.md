@@ -94,7 +94,7 @@ Source imagery was generated with OpenAI image generation. Motion is an editoria
 - [x] Final 100-second demo render and English captions are prepared at the paths above.
 - [x] Five release screenshots are prepared in `assets/submission/screenshots/`.
 - [x] Upload the frozen demo to YouTube and attach the English caption track.
-- [ ] Devpost fields contain the final live URL, repository URL, video URL, description, and images.
+- [x] Devpost fields contain the final live URL, repository URL, video URL, description, and images.
 - [ ] Owner review and the final Devpost Submit action.
 
 The final Devpost Submit action remains held for the owner.
