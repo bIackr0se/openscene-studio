@@ -1,6 +1,6 @@
 # OpenScene submission assets
 
-This directory holds the prepared WebMCP Challenge evidence. The final source update and final video remain local until the owner authorizes release. The existing public app, repository, and YouTube video are earlier candidates. The Devpost entry remains unsubmitted.
+This directory holds the WebMCP Challenge evidence. The final app, MIT-licensed source, and 100-second YouTube demo are public and verified. The Devpost challenge entry remains unsubmitted pending owner confirmation.
 
 ## Studio screenshots
 
@@ -43,4 +43,4 @@ Existing files under `demo/` with rehearsal-era timelines, captions, manifests, 
 - The narrator is separate from the scene partner.
 - Use the free local Superwhisper model only to verify intelligibility and caption timing.
 
-The final deployment update, source push, YouTube upload, and Devpost submission remain separate owner-controlled release actions.
+The final Devpost submission remains a separate owner-controlled action.

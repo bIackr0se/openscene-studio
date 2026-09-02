@@ -1,8 +1,8 @@
 # OpenScene Studio
 
-[Live app](https://openscene-webmcp.jijou-leo40.chatgpt.site/) · [Public source](https://github.com/bIackr0se/openscene-studio) · [MIT license](LICENSE)
+[Live app](https://openscene-webmcp.jijou-leo40.chatgpt.site/) · [100-second demo](https://youtu.be/v5wYFyt5SgM) · [Public source](https://github.com/bIackr0se/openscene-studio) · [MIT license](LICENSE)
 
-The final 100-second demo and matching source update are prepared locally. The existing public video is an earlier candidate and is not the release film described below.
+The final 100-second demo, deployed app, and complete MIT-licensed source are public at the links above.
 
 OpenScene Studio lets a trainer ask ChatGPT to add one missing learner turn to a video lesson already open in the browser.
 

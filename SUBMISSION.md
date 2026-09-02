@@ -1,15 +1,15 @@
 # OpenScene Studio submission draft
 
-The release package is prepared for owner review. The final Devpost submission is intentionally held.
+The public release package is verified. The final Devpost submission is intentionally held for owner confirmation.
 
 Hard deadline: September 3, 2026 at 1:00 p.m. PT. Devpost displays September 3 at 10:00 p.m. GMT+2.
 
 ## Submission links
 
-- Intended live URL: https://openscene-webmcp.jijou-leo40.chatgpt.site/ (clean-session access verification pending)
-- Repository URL reserved for publication: https://github.com/bIackr0se/openscene-studio (public push pending)
-- Public YouTube demo: final upload pending owner release (the existing YouTube video is an earlier candidate)
-- Local demo file for upload: `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`
+- Live URL: https://openscene-webmcp.jijou-leo40.chatgpt.site/
+- Public repository: https://github.com/bIackr0se/openscene-studio
+- Public YouTube demo: https://youtu.be/v5wYFyt5SgM
+- Canonical local demo file: `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`
 
 ## Project name
 
@@ -88,13 +88,13 @@ Source imagery was generated with OpenAI image generation. Motion is an editoria
 - [x] OpenScene Studio implements six real WebMCP tools and a human-controlled practice loop.
 - [x] Proposal and update contracts reject agent-supplied response copy, boards, media, and answer timing.
 - [x] Local Studio state, WebMCP, browser, accessibility, responsive, media, type, lint, format, and production-build checks pass on the candidate.
-- [ ] Deploy the frozen candidate and verify unrestricted access from a clean session.
-- [ ] Push the frozen source, assets, instructions, tests, and visible MIT license to the public repository.
+- [x] Deploy the frozen candidate and verify unrestricted access from a clean session.
+- [x] Push the frozen source, assets, instructions, tests, and visible MIT license to the public repository.
 - [x] Authentic native ChatGPT capture exists with privacy crop and same-page mutation evidence.
 - [x] Final 100-second demo render and English captions are prepared at the paths above.
 - [x] Five release screenshots are prepared in `assets/submission/screenshots/`.
-- [ ] Upload the frozen demo to YouTube and attach the English caption track.
-- [ ] Devpost fields contain the final live URL, repository URL, video URL, description, and images.
+- [x] Upload the frozen demo to YouTube and attach the English caption track.
+- [x] Devpost fields contain the final live URL, repository URL, video URL, description, and images.
 - [ ] Owner review and the final Devpost Submit action.
 
 The final Devpost Submit action remains held for the owner.

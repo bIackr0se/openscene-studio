@@ -72,6 +72,6 @@ npm run verify:studio-demo-release -- \
   --manifest assets/submission/studio-demo/release.manifest.json
 ```
 
-The verified film and English SRT are held locally until the owner authorizes the final public upload. The existing YouTube link points to an earlier candidate and must not be submitted as the release film. The Devpost form may be prepared with the live URL, public repository, final video URL, description, and five release images, but the final Submit action remains held for the owner.
+The verified film is public at https://youtu.be/v5wYFyt5SgM with its English caption track attached. The live app and public source are linked in the video description. The final Devpost Submit action remains held for the owner.
 
 The proof record and source capture are private local release evidence. The public repository includes only the redacted contract template.
