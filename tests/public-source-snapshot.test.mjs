@@ -56,6 +56,29 @@ test('public source snapshot rejects a missing Studio demo verifier', () => {
   );
 });
 
+test('public source snapshot requires the reproducible Studio demo sources', () => {
+  const requiredDemoSources = [
+    'assets/submission/studio-demo/captions.srt',
+    'assets/submission/studio-demo/narration-timeline.json',
+    'assets/submission/studio-demo/youtube-thumbnail.jpg',
+    'assets/submission/screenshots/devpost-thumbnail.jpg',
+    'scripts/build-studio-demo.mjs',
+    'scripts/render-studio-demo-assets.mjs',
+    'scripts/render-studio-narration.py',
+  ];
+
+  for (const requiredPath of requiredDemoSources) {
+    const entries = archiveEntries().filter(
+      (entry) => !entry.endsWith(`/${requiredPath}`),
+    );
+    assert.ok(
+      validateArchiveEntries(entries).includes(
+        `missing required public source: ${requiredPath}`,
+      ),
+    );
+  }
+});
+
 test('public source snapshot requires the active Studio implementation', () => {
   const entries = archiveEntries().filter(
     (entry) => !entry.endsWith('/lib/studio-webmcp.ts'),

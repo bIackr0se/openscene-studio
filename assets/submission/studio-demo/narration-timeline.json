@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "durationSec": 109.5,
+  "model": "mlx-community/Kokoro-82M-bf16",
+  "voice": "af_heart",
+  "language": "a",
+  "speed": 0.96,
+  "cues": [
+    {
+      "id": "context",
+      "startSec": 0.5,
+      "endSec": 8.1,
+      "text": "Before changing trains in Germany, a passenger who cannot use stairs practises at home how to ask for the lift."
+    },
+    {
+      "id": "lesson_gap",
+      "startSec": 8.7,
+      "endSec": 15.2,
+      "text": "The existing station lesson explains platform two. It never teaches the lift question."
+    },
+    {
+      "id": "learner_need",
+      "startSec": 16.4,
+      "endSec": 22.8,
+      "text": "A trainer is preparing the lesson for this learner, who does not know the German words."
+    },
+    {
+      "id": "exact_request",
+      "startSec": 23.8,
+      "endSec": 35.1,
+      "text": "This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it."
+    },
+    {
+      "id": "webmcp_difference",
+      "startSec": 36.0,
+      "endSec": 43.6,
+      "text": "ChatGPT can translate the sentence. WebMCP adds the missing practice turn to this open video."
+    },
+    {
+      "id": "native_tools",
+      "startSec": 43.8,
+      "endSec": 51.3,
+      "text": "ChatGPT reads the open lesson, adds the lift practice, and opens its preview through the page's tools."
+    },
+    {
+      "id": "page_boundary",
+      "startSec": 52.1,
+      "endSec": 58.2,
+      "text": "OpenScene supplies the approved words, filmed answer, route board, and timing."
+    },
+    {
+      "id": "draft_link",
+      "startSec": 59.0,
+      "endSec": 63.8,
+      "text": "The draft links the learner's need, German line, and pause."
+    },
+    {
+      "id": "learner_pause",
+      "startSec": 64.8,
+      "endSec": 69.7,
+      "text": "During preview, the lesson stops before the answer and waits for the learner."
+    },
+    {
+      "id": "learner_choice",
+      "startSec": 70.1,
+      "endSec": 73.8,
+      "text": "The learner selects the matching German line on the page."
+    },
+    {
+      "id": "response",
+      "startSec": 74.2,
+      "endSec": 82.4,
+      "text": "Only then does the approved filmed response start, with the LIFT TO PLATFORM 2 board."
+    },
+    {
+      "id": "rehearsed",
+      "startSec": 83.4,
+      "endSec": 89.4,
+      "text": "The learner can rehearse the exact exchange before the trip."
+    },
+    {
+      "id": "trainer_decision",
+      "startSec": 90.2,
+      "endSec": 96.1,
+      "text": "The trainer keeps the path. Undo remains, and every edit has a visible revision."
+    },
+    {
+      "id": "implementation",
+      "startSec": 96.3,
+      "endSec": 103.4,
+      "text": "The page registers six narrow WebMCP tools. Filmed answers and timing stay page-approved."
+    },
+    {
+      "id": "scope",
+      "startSec": 103.5,
+      "endSec": 109.2,
+      "text": "This fictional lesson is for practice at home. It gives no live travel guidance."
+    }
+  ]
+}

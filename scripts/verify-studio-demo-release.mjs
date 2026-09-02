@@ -16,9 +16,10 @@ import { dirname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-export const STUDIO_DEMO_MANIFEST_VERSION = 1;
-export const NATIVE_PROOF_SCHEMA_VERSION = 5;
+export const STUDIO_DEMO_MANIFEST_VERSION = 2;
+export const NATIVE_PROOF_SCHEMA_VERSION = 7;
 export const STUDIO_PROJECT_ID = 'station-transfer-studio';
+export const STUDIO_BRANCH_ID = 'ask_for_lift';
 export const STUDIO_RELEASE_ID = 'openscene-webmcp-studio-2026-09-01';
 
 export const EXPECTED_STUDIO_TOOL_NAMES = [
@@ -33,28 +34,80 @@ export const EXPECTED_STUDIO_TOOL_NAMES = [
 export const REQUIRED_STUDIO_EVIDENCE_MARKERS = [
   'studio_source',
   'native_chatgpt_request',
-  'six_tool_discovery',
+  'six_tool_implementation_proof',
   'inspect_project_result',
   'propose_branch_result',
   'preview_waiting_for_learner',
+  'learner_turn_visible',
   'learner_line_selection',
   'response_and_answer_board',
   'human_keep_or_undo',
 ];
 
-export const REQUIRED_NATIVE_MILESTONES = [
-  'request',
-  'tool_discovery',
-  'inspect_call',
-  'inspect_result',
-  'propose_call',
-  'propose_result',
-  'preview_call',
-  'preview_result',
+export const EXPECTED_STUDIO_EVIDENCE_MARKERS = {
+  studio_source: {
+    atSec: 8.7,
+    kind: 'editorial',
+    surface: 'studio-state',
+  },
+  native_chatgpt_request: {
+    atSec: 23.8,
+    kind: 'editorial',
+    surface: 'request-card',
+  },
+  inspect_project_result: {
+    atSec: 43.8,
+    kind: 'native',
+    surface: 'native-chatgpt-capture',
+  },
+  propose_branch_result: {
+    atSec: 47.5,
+    kind: 'native',
+    surface: 'native-chatgpt-capture',
+  },
+  six_tool_implementation_proof: {
+    atSec: 96.3,
+    kind: 'editorial',
+    surface: 'code-proof',
+  },
+  preview_waiting_for_learner: {
+    atSec: 59,
+    kind: 'editorial',
+    surface: 'studio-state',
+  },
+  learner_turn_visible: {
+    atSec: 64.8,
+    kind: 'editorial',
+    surface: 'studio-state',
+  },
+  learner_line_selection: {
+    atSec: 72.5,
+    kind: 'editorial',
+    surface: 'human-page-action',
+  },
+  response_and_answer_board: {
+    atSec: 82.7,
+    kind: 'editorial',
+    surface: 'studio-state',
+  },
+  human_keep_or_undo: {
+    atSec: 95.2,
+    kind: 'native',
+    surface: 'native-chatgpt-capture',
+  },
+};
+
+export const STUDIO_EVIDENCE_SOURCE = 'mixed-native-and-editorial';
+
+export const REQUIRED_PROOF_VIDEO_MILESTONES = [
+  'exact_request',
+  'native_tool_trace',
+  'draft_visible',
   'learner_turn_visible',
   'learner_action',
   'response_visible',
   'human_keep',
+  'tool_contract',
 ];
 
 export const EXPECTED_REQUEST =
@@ -66,7 +119,7 @@ export const MIN_DEMO_DURATION_SEC = 95;
 export const MAX_DEMO_DURATION_SEC = 110;
 
 const EXPECTED_WIDTH = 1440;
-const EXPECTED_HEIGHT = 900;
+const EXPECTED_HEIGHT = 810;
 const EXPECTED_FPS = 30;
 const DURATION_EPSILON_SEC = 0.05;
 const STREAM_DURATION_EPSILON_SEC = 0.15;
@@ -127,6 +180,12 @@ function sha256(filePath) {
 function number(value) {
   const result = Number(value);
   return Number.isFinite(result) ? result : null;
+}
+
+function closeTo(actual, expected) {
+  return (
+    Number.isFinite(actual) && Math.abs(actual - expected) <= TIMING_EPSILON_SEC
+  );
 }
 
 function parseRate(value) {
@@ -637,8 +696,8 @@ function validateAudioPipeline(projectRoot, manifest, findings) {
 function validateStudioEvidence(manifest, nativeProof, findings) {
   const evidence = manifest?.studioEvidence;
   if (isRecord(evidence)) {
-    if (evidence.source !== 'native-chatgpt') {
-      findings.push('studioEvidence.source must be native-chatgpt');
+    if (evidence.source !== STUDIO_EVIDENCE_SOURCE) {
+      findings.push(`studioEvidence.source must be ${STUDIO_EVIDENCE_SOURCE}`);
     }
     if (evidence.readableAtNormalPlayback !== true) {
       findings.push('studioEvidence.readableAtNormalPlayback must be true');
@@ -646,10 +705,67 @@ function validateStudioEvidence(manifest, nativeProof, findings) {
     if (evidence.sameFrameMutation !== true) {
       findings.push('studioEvidence.sameFrameMutation must be true');
     }
+    const nativeCapture = evidence.nativeCapture;
+    if (!isRecord(nativeCapture)) {
+      findings.push('studioEvidence.nativeCapture is required');
+    } else {
+      if (nativeCapture.source !== 'native-chatgpt-capture') {
+        findings.push(
+          'studioEvidence.nativeCapture.source must be native-chatgpt-capture',
+        );
+      }
+      for (const field of [
+        'requestContextVisibleInCapture',
+        'toolTraceVisible',
+        'toolInputsVisible',
+        'pageMutationVisible',
+        'sameFrameMutation',
+      ]) {
+        if (nativeCapture[field] !== true) {
+          findings.push(`studioEvidence.nativeCapture.${field} must be true`);
+        }
+      }
+      for (const field of [
+        'requestVisibleInCapture',
+        'toolNamesVisibleInCapture',
+        'structuredResultsVisibleInCapture',
+      ]) {
+        if (nativeCapture[field] !== false) {
+          findings.push(`studioEvidence.nativeCapture.${field} must be false`);
+        }
+      }
+      if (Object.hasOwn(nativeCapture, 'structuredResultsVisible')) {
+        findings.push(
+          'studioEvidence.nativeCapture.structuredResultsVisible is obsolete; use structuredResultsVisibleInCapture',
+        );
+      }
+      const proofEvidence = nativeProof?.nativeEvidence;
+      if (isRecord(proofEvidence)) {
+        for (const field of [
+          'requestVisibleInCapture',
+          'requestContextVisibleInCapture',
+          'toolNamesVisibleInCapture',
+          'structuredResultsVisibleInCapture',
+          'toolTraceVisible',
+          'toolInputsVisible',
+          'pageMutationVisible',
+          'sameFrameMutation',
+        ]) {
+          if (nativeCapture[field] !== proofEvidence[field]) {
+            findings.push(
+              `studioEvidence.nativeCapture.${field} must match nativeProof.nativeEvidence.${field}`,
+            );
+          }
+        }
+      }
+    }
     const markers = Array.isArray(evidence.markers) ? evidence.markers : [];
     const markerIds = markers.map((marker) =>
       typeof marker === 'string' ? marker : marker?.id,
     );
+    if (new Set(markerIds).size !== markerIds.length) {
+      findings.push('studioEvidence markers must not contain duplicate ids');
+    }
     for (const required of REQUIRED_STUDIO_EVIDENCE_MARKERS) {
       const markerIndex = markerIds.indexOf(required);
       if (markerIndex === -1) {
@@ -659,6 +775,21 @@ function validateStudioEvidence(manifest, nativeProof, findings) {
       const marker = markers[markerIndex];
       if (isRecord(marker) && marker.readable !== true) {
         findings.push(`studioEvidence marker ${required} must be readable`);
+      }
+      const expected = EXPECTED_STUDIO_EVIDENCE_MARKERS[required];
+      if (!expected || !isRecord(marker)) continue;
+      if (!closeTo(Number(marker.atSec), expected.atSec)) {
+        findings.push(
+          `studioEvidence marker ${required} must be at ${expected.atSec} seconds`,
+        );
+      }
+      if (
+        marker.kind !== expected.kind ||
+        marker.surface !== expected.surface
+      ) {
+        findings.push(
+          `studioEvidence marker ${required} must identify ${expected.kind} ${expected.surface} evidence`,
+        );
       }
     }
     return;
@@ -674,16 +805,24 @@ function validateStudioEvidence(manifest, nativeProof, findings) {
   if (
     nativeEvidence.source !== 'native-chatgpt' ||
     nativeEvidence.readableAtNormalPlayback !== true ||
-    nativeEvidence.requestVisible !== true ||
-    nativeEvidence.toolDiscoveryVisible !== true ||
+    nativeEvidence.requestContextVisibleInCapture !== true ||
+    nativeEvidence.toolTraceVisible !== true ||
     nativeEvidence.toolInputsVisible !== true ||
-    nativeEvidence.structuredResultsVisible !== true ||
     nativeEvidence.pageMutationVisible !== true ||
     nativeEvidence.sameFrameMutation !== true
   ) {
     findings.push(
       'nativeProof.nativeEvidence must record readable native ChatGPT evidence',
     );
+  }
+  for (const field of [
+    'requestVisibleInCapture',
+    'toolNamesVisibleInCapture',
+    'structuredResultsVisibleInCapture',
+  ]) {
+    if (nativeEvidence[field] !== false) {
+      findings.push(`nativeProof.nativeEvidence.${field} must be false`);
+    }
   }
 }
 
@@ -730,16 +869,29 @@ function validateNativeTrace(proof, findings) {
     }
     for (const field of [
       'readableAtNormalPlayback',
-      'requestVisible',
-      'toolDiscoveryVisible',
+      'requestContextVisibleInCapture',
+      'toolTraceVisible',
       'toolInputsVisible',
-      'structuredResultsVisible',
       'pageMutationVisible',
       'sameFrameMutation',
     ]) {
       if (nativeEvidence[field] !== true) {
         findings.push(`native proof nativeEvidence.${field} must be true`);
       }
+    }
+    for (const field of [
+      'requestVisibleInCapture',
+      'toolNamesVisibleInCapture',
+      'structuredResultsVisibleInCapture',
+    ]) {
+      if (nativeEvidence[field] !== false) {
+        findings.push(`native proof nativeEvidence.${field} must be false`);
+      }
+    }
+    if (Object.hasOwn(nativeEvidence, 'structuredResultsVisible')) {
+      findings.push(
+        'native proof nativeEvidence.structuredResultsVisible is obsolete; use structuredResultsVisibleInCapture',
+      );
     }
     if (nativeEvidence.conversationNamesMaskedOnly !== true) {
       findings.push(
@@ -753,31 +905,62 @@ function validateNativeTrace(proof, findings) {
       findings.push('native proof cannot use a synthetic panel or test double');
     }
   }
-  const cleanStart = proof.cleanStart;
-  if (!isRecord(cleanStart)) {
-    findings.push('native proof cleanStart is required');
+  const requestEvidence = proof.requestEvidence;
+  if (!isRecord(requestEvidence)) {
+    findings.push('native proof requestEvidence is required');
   } else {
-    if (cleanStart.requestText !== EXPECTED_REQUEST) {
+    if (
+      requestEvidence.exactText !== EXPECTED_REQUEST ||
+      requestEvidence.source !==
+        'editorial-card-transcribed-from-native-task' ||
+      requestEvidence.visibleBeforeNativeToolEvidence !== true ||
+      requestEvidence.faithfulToNativeTask !== true ||
+      requestEvidence.syntheticNativeUi !== false
+    ) {
       findings.push(
-        'native proof cleanStart must contain the exact Studio request',
+        'native proof requestEvidence must identify the faithful editorial request card',
       );
     }
+  }
+  const captureStart = proof.captureStart;
+  if (!isRecord(captureStart)) {
+    findings.push('native proof captureStart is required');
+  } else {
     if (
-      cleanStart.projectId !== STUDIO_PROJECT_ID ||
-      cleanStart.pageRevisionAtStart !== 0 ||
-      cleanStart.pageStateIdAtStart !== `${STUDIO_PROJECT_ID}:r0:source:source`
+      captureStart.projectId !== STUDIO_PROJECT_ID ||
+      captureStart.pageRevisionAtStart !== 0 ||
+      captureStart.pageStateIdAtStart !==
+        `${STUDIO_PROJECT_ID}:r0:source:source`
     ) {
       findings.push('native proof must begin at Studio revision zero');
     }
     if (
-      cleanStart.requestVisibleBeforeToolEvidence !== true ||
-      cleanStart.unrelatedConversationVisible !== false ||
-      cleanStart.futureToolEvidenceVisibleAtRequest !== false
+      captureStart.requestAlreadySubmitted !== true ||
+      captureStart.requestVisibleAtCaptureStart !== false ||
+      captureStart.requestContextVisibleAtCaptureStart !== true ||
+      captureStart.unrelatedConversationVisible !== false ||
+      captureStart.futureToolEvidenceVisibleAtCaptureStart !== false
     ) {
       findings.push(
-        'native proof must show the request before future tool evidence',
+        'native proof captureStart must record the collapsed request honestly',
       );
     }
+  }
+
+  const machineRecordedTrace = proof.machineRecordedTrace;
+  if (!isRecord(machineRecordedTrace)) {
+    findings.push(
+      'native proof machineRecordedTrace is required for structured native results',
+    );
+  } else if (
+    machineRecordedTrace.source !== 'native-tool-execution-record' ||
+    machineRecordedTrace.complete !== true ||
+    machineRecordedTrace.verified !== true ||
+    machineRecordedTrace.visibleInCapture !== false
+  ) {
+    findings.push(
+      'native proof machineRecordedTrace must identify a complete verified trace that is not visible as native result cards',
+    );
   }
 
   const trace = proof.trace;
@@ -806,7 +989,7 @@ function validateNativeTrace(proof, findings) {
       propose?.result?.selectedResponsePackId !== 'step_free'
     ) {
       findings.push(
-        'native proof proposal must create the step_free draft at revision one',
+        'native proof proposal must create the lift draft at revision one',
       );
     }
     const preview = trace[2];
@@ -851,9 +1034,9 @@ function validateNativeTrace(proof, findings) {
 }
 
 function validateNativeTiming(proof, findings) {
-  const timing = proof?.captureTiming;
+  const timing = proof?.proofVideoTiming;
   if (!isRecord(timing)) {
-    findings.push('native proof captureTiming is required');
+    findings.push('native proof proofVideoTiming is required');
     return;
   }
   const duration = number(timing.durationSec);
@@ -863,17 +1046,17 @@ function validateNativeTiming(proof, findings) {
     duration > MAX_NATIVE_CAPTURE_SEC
   ) {
     findings.push(
-      `native proof captureTiming.durationSec must be between ${MIN_NATIVE_CAPTURE_SEC} and ${MAX_NATIVE_CAPTURE_SEC} seconds`,
+      `native proof proofVideoTiming.durationSec must be between ${MIN_NATIVE_CAPTURE_SEC} and ${MAX_NATIVE_CAPTURE_SEC} seconds`,
     );
     return;
   }
   const milestones = timing.milestones;
   if (!Array.isArray(milestones)) {
-    findings.push('native proof captureTiming.milestones is required');
+    findings.push('native proof proofVideoTiming.milestones is required');
     return;
   }
   const ids = milestones.map((milestone) => milestone?.id);
-  if (!sameJson(ids, REQUIRED_NATIVE_MILESTONES)) {
+  if (!sameJson(ids, REQUIRED_PROOF_VIDEO_MILESTONES)) {
     findings.push(
       'native proof milestones must cover the complete Studio sequence in order',
     );
@@ -891,17 +1074,13 @@ function validateNativeTiming(proof, findings) {
   }
   const at = new Map(ids.map((id, index) => [id, times[index]]));
   const holds = [
-    ['request', 'tool_discovery', 2, 'request hold'],
-    ['tool_discovery', 'inspect_call', 1.5, 'tool discovery hold'],
-    ['inspect_call', 'inspect_result', 1, 'inspect result hold'],
-    ['inspect_result', 'propose_call', 1, 'inspect-to-propose hold'],
-    ['propose_call', 'propose_result', 1, 'proposal input hold'],
-    ['propose_result', 'preview_call', 2, 'draft branch hold'],
-    ['preview_call', 'preview_result', 1, 'preview result hold'],
-    ['preview_result', 'learner_turn_visible', 3, 'practice setup hold'],
+    ['exact_request', 'native_tool_trace', 4, 'request-to-native interval'],
+    ['native_tool_trace', 'draft_visible', 4, 'native-trace hold'],
+    ['draft_visible', 'learner_turn_visible', 3, 'draft-to-practice interval'],
     ['learner_turn_visible', 'learner_action', 3, 'learner line hold'],
     ['learner_action', 'response_visible', 1.2, 'learner-to-response delay'],
     ['response_visible', 'human_keep', 4, 'response hold'],
+    ['human_keep', 'tool_contract', 2, 'keep-to-contract interval'],
   ];
   for (const [from, to, minimum, label] of holds) {
     if (at.get(to) - at.get(from) + TIMING_EPSILON_SEC < minimum) {
@@ -910,9 +1089,9 @@ function validateNativeTiming(proof, findings) {
       );
     }
   }
-  if (duration - at.get('human_keep') + TIMING_EPSILON_SEC < 2) {
+  if (duration - at.get('tool_contract') + TIMING_EPSILON_SEC < 2) {
     findings.push(
-      'native proof keep result must remain visible for at least 2 seconds',
+      'native proof tool contract must remain visible for at least 2 seconds',
     );
   }
 }
@@ -1051,7 +1230,8 @@ function validateNativeFiles(projectRoot, proof, manifest, findings) {
     findings.push('native proof capture must start at Studio revision zero');
   }
   if (
-    loaded.capture?.endStateId !== `${STUDIO_PROJECT_ID}:r4:step_free:response`
+    loaded.capture?.endStateId !==
+    `${STUDIO_PROJECT_ID}:r4:${STUDIO_BRANCH_ID}:response`
   ) {
     findings.push(
       'native proof capture must end after the page-owned keep state',

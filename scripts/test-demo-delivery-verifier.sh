@@ -9,7 +9,7 @@ positive_video="$probe_root/bounded.mp4"
 positive_srt="$probe_root/bounded.srt"
 
 ffmpeg -y -v error \
-  -f lavfi -i 'color=c=black:s=1440x900:r=30:d=2.4' \
+  -f lavfi -i 'color=c=black:s=1440x810:r=30:d=2.4' \
   -f lavfi -i 'sine=frequency=440:sample_rate=48000:duration=2.4' \
   -map 0:v:0 -map 1:a:0 -t 2.4 \
   -af 'loudnorm=I=-16:LRA=7:TP=-1.5' \
@@ -66,14 +66,14 @@ expect_failure 'under-level audio' 'integrated loudness must be' "$quiet_video" 
 
 no_audio_video="$probe_root/no-audio.mp4"
 ffmpeg -y -v error \
-  -f lavfi -i 'color=c=black:s=1440x900:r=30:d=2.4' \
+  -f lavfi -i 'color=c=black:s=1440x810:r=30:d=2.4' \
   -an -c:v libx264 -preset ultrafast -pix_fmt yuv420p -r 30 \
   -movflags +faststart "$no_audio_video"
 expect_failure 'no-audio video' 'nonempty audio stream' "$no_audio_video" "$positive_srt"
 
 overlong_video="$probe_root/overlong.mp4"
 ffmpeg -y -v error \
-  -f lavfi -i 'color=c=black:s=1440x900:r=30:d=180.1' \
+  -f lavfi -i 'color=c=black:s=1440x810:r=30:d=180.1' \
   -f lavfi -i 'sine=frequency=440:sample_rate=48000:duration=180.1' \
   -map 0:v:0 -map 1:a:0 -t 180.1 \
   -c:v libx264 -preset ultrafast -pix_fmt yuv420p -r 30 \

@@ -9,7 +9,7 @@ The final demo can be a 95 to 110 second film. The native proof itself may be sh
 1. Open the Studio page in ChatGPT's built-in browser. For a release proof, use the final public HTTPS URL. For a private preview, use the owner-only preview and mark the record `private-preview` when verifying it.
 2. Confirm that the page shows `READY FOR CHATGPT` and the native Site Tools control is available.
 3. Start a clean ChatGPT task. Conversation names and unrelated history may be cropped or blurred, but the current request and native tool activity must remain readable.
-4. Place ChatGPT beside the Studio page. Use a large enough layout for the request, six tool names, exact inputs, structured results, page version, learner line, and answer board to be read at normal playback speed.
+4. Place ChatGPT beside the Studio page. Use a large enough layout for the task context, exact inputs, project activity, page version, learner line, and answer board to be read at normal playback speed.
 5. Reset the page to the source state. The first visible page state must be `station-transfer-studio:r0:source:source`.
 6. Do not open a direct preview or use a browser test double. The capture must come from the real ChatGPT surface.
 
@@ -21,12 +21,12 @@ The request describes the learner's need. The page supplies the station project,
 
 ## Native sequence
 
-Record one uninterrupted sequence. Let each state settle before starting its reading hold. The proof record stores normalized fields from the native structured results, while the capture must show the original native surface and the same page changing beside it.
+Record one uninterrupted sequence. Let each state settle before starting its reading hold. The proof record stores normalized tool inputs and results separately. The capture must show the original native task surface and the same page changing beside it. Do not claim that a field is visible in the capture unless it is readable there.
 
 | Order | Native action   | Required input or result                                                                                                              | Page state to keep in frame                                                        |
 | ----- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | 1     | ChatGPT request | The exact request above, before any tool evidence                                                                                     | Source project at revision 0                                                       |
-| 2     | Tool discovery  | All six tools, in registration order                                                                                                  | `READY FOR CHATGPT`                                                                |
+| 2     | Native activity | ChatGPT begins working with the open project                                                                                          | `READY FOR CHATGPT`                                                                |
 | 3     | Inspect         | `openscene_inspect_project({ projectId: "station-transfer-studio" })`                                                                 | `station-transfer-studio:r0:source:source`                                         |
 | 4     | Propose         | `openscene_propose_branch({ branch: { ... responsePackId: "step_free", pauseAtSec: 2.04 }, expectedRevision: 0 })`                    | Mint draft branch and page revision 1                                              |
 | 5     | Proposal result | Structured result with `selectedBranchStatus: "draft"`, `selectedResponsePackId: "step_free"`, and `answerBoard: "LIFT → PLATFORM 2"` | The page-owned response pack is visible and the page remains on its source preview |
@@ -53,9 +53,9 @@ The proposal branch must contain only the learner need, learner line, translatio
 The verifier intentionally checks relationships between events instead of requiring the old fixed 48-second edit. Use these minimum holds as the floor for a calm 95 to 110 second demo:
 
 - Keep the complete request visible for 2 seconds before tool evidence appears.
-- Keep the six-tool discovery visible for 1.5 seconds before the inspect call.
-- Keep each inspect or preview result visible for 1 second.
-- Keep the proposal input and its structured result readable for 2.5 seconds.
+- Keep the native project activity visible for 1.5 seconds before the inspect call.
+- Keep each readable inspect or preview step visible for 1 second.
+- Keep the proposal input readable for 2.5 seconds.
 - Keep the new draft branch and page revision together for 2 seconds before previewing it.
 - Keep the learner choices visible for 3 seconds before the click.
 - Leave at least 1.2 seconds between the learner click and the first visible response movement. Let the click land in silence.
@@ -68,10 +68,10 @@ Animation time does not count as reading time. Stop the cursor during each hold.
 
 Stop and discard the affected capture if any of these occur:
 
-- ChatGPT cannot discover all six Studio tools, or the selected model cannot call them.
+- ChatGPT cannot call the required Studio tools.
 - The browser surface is a normal ChatGPT web conversation rather than the built-in browser or another explicitly supported native WebMCP surface.
 - A page receipt, test stub, scripted panel, or restyled ChatGPT card is the only evidence of the call.
-- The request, tool input, structured result, page revision, learner line, or answer board is unreadable at normal playback speed.
+- The native task context, tool input, page revision, learner line, or answer board is unreadable at normal playback speed.
 - The page does not begin at revision zero, or the native capture and page stop showing the same project state.
 - The proposal injects response words, translation, board text, media, or timing that should come from the page-owned response pack.
 - The learner response appears before the human selects the exact German line.
@@ -81,7 +81,7 @@ Stop and discard the affected capture if any of these occur:
 
 ## Completing the proof record
 
-Copy the template at [`assets/submission/native-webmcp-proof.template.json`](../native-webmcp-proof.template.json) to a private proof record. Set `template` to `false` only after the capture is complete. Record the exact release commit, timestamp, access status, and capture paths.
+Copy the template at [`assets/submission/native-webmcp-proof.template.json`](../native-webmcp-proof.template.json) to the private local record `assets/submission/studio-native-webmcp-proof.json`. Set `template` to `false` only after the capture is complete. Record the exact release commit, timestamp, access status, and capture paths. The private record and source capture are excluded from the public source archive.
 
 The record must include:
 
@@ -97,7 +97,7 @@ The record must include:
 Verify the private record with:
 
 ```bash
-OPENSCENE_NATIVE_PROOF_RECORD=assets/submission/native-webmcp-proof.json \
+OPENSCENE_NATIVE_PROOF_RECORD=assets/submission/studio-native-webmcp-proof.json \
 OPENSCENE_NATIVE_PROOF_MODE=private-preview \
 npm run verify:native-proof
 ```
