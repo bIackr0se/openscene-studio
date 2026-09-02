@@ -5,12 +5,24 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
+import {
+  STUDIO_DEMO_DURATION_SEC,
+  STUDIO_DEMO_SCENES,
+} from './studio-demo-plan.mjs';
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const assets = resolve(root, 'work/studio-demo-assets');
 const scenesDir = resolve(root, 'work/studio-demo-scenes');
+
+function argumentValue(name) {
+  const index = process.argv.indexOf(name);
+  return index >= 0 ? process.argv[index + 1] : undefined;
+}
+
 const output = resolve(
   root,
-  'assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4',
+  argumentValue('--output') ??
+    'assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4',
 );
 const narration = resolve(root, 'assets/submission/studio-demo/narration.wav');
 const nativeCapture = resolve(
@@ -32,10 +44,8 @@ run('node', ['scripts/render-studio-demo-assets.mjs']);
 rmSync(scenesDir, { recursive: true, force: true });
 mkdirSync(scenesDir, { recursive: true });
 
-const coreDurations = [
-  8.5, 7.7, 7.4, 12.0, 7.8, 8.4, 6.8, 9.8, 6.8, 7.5, 7.3, 6.0, 7.1, 6.4,
-];
-const transitionDuration = 0.35;
+const coreDurations = STUDIO_DEMO_SCENES.map((scene) => scene.durationSec);
+const transitionDuration = 0.22;
 
 function scenePath(index) {
   return resolve(scenesDir, `${String(index).padStart(2, '0')}.mp4`);
@@ -72,26 +82,88 @@ function stillScene(index, file) {
   ]);
 }
 
-function nativeScene(index, startSec) {
+function problemIntroScene(index) {
   const duration = coreDurations[index] + transitionDuration;
+  const internalTransition = 0.22;
+  const announcementDuration = 4.75;
+  const missingDuration = duration - announcementDuration + internalTransition;
   run('ffmpeg', [
     '-y',
     '-v',
     'error',
-    '-ss',
-    String(startSec),
-    '-i',
-    nativeCapture,
     '-loop',
     '1',
     '-framerate',
     '30',
     '-i',
-    resolve(assets, 'native-label.png'),
+    resolve(assets, '01-source-focus.png'),
+    '-loop',
+    '1',
+    '-framerate',
+    '30',
+    '-i',
+    resolve(assets, '02-missing-question.png'),
+    '-filter_complex',
+    `[0:v]scale=1440:900,fps=30,format=yuv420p,trim=duration=${announcementDuration},setpts=PTS-STARTPTS[announcement];` +
+      `[1:v]scale=1440:900,fps=30,format=yuv420p,trim=duration=${missingDuration},setpts=PTS-STARTPTS[missing];` +
+      `[announcement][missing]xfade=transition=wipeleft:duration=${internalTransition}:offset=${announcementDuration - internalTransition}[out]`,
+    '-map',
+    '[out]',
+    '-an',
     '-t',
     String(duration),
+    '-c:v',
+    'libx264',
+    '-preset',
+    'medium',
+    '-crf',
+    '18',
+    '-movflags',
+    '+faststart',
+    scenePath(index),
+  ]);
+}
+
+function nativeScene(index, captureSlices) {
+  const duration = coreDurations[index] + transitionDuration;
+  const args = ['-y', '-v', 'error'];
+  for (const slice of captureSlices) {
+    args.push(
+      '-ss',
+      String(slice.startSec),
+      '-t',
+      String(slice.durationSec),
+      '-i',
+      nativeCapture,
+    );
+  }
+  for (let step = 1; step <= captureSlices.length; step += 1) {
+    args.push(
+      '-loop',
+      '1',
+      '-framerate',
+      '30',
+      '-i',
+      resolve(assets, `native-step-${step}.png`),
+    );
+  }
+  const filters = [];
+  const clipLabels = [];
+  const overlayOffset = captureSlices.length;
+  captureSlices.forEach((slice, sliceIndex) => {
+    const label = `native${sliceIndex}`;
+    filters.push(
+      `[${sliceIndex}:v]scale=1440:900,fps=30,format=yuv420p,trim=duration=${slice.durationSec},setpts=PTS-STARTPTS[base${sliceIndex}]`,
+      `[base${sliceIndex}][${overlayOffset + sliceIndex}:v]overlay=0:0:format=auto:shortest=1,trim=duration=${slice.durationSec},setpts=PTS-STARTPTS,format=yuv420p[${label}]`,
+    );
+    clipLabels.push(`[${label}]`);
+  });
+  filters.push(
+    `${clipLabels.join('')}concat=n=${captureSlices.length}:v=1:a=0,tpad=stop_mode=clone:stop_duration=${transitionDuration},trim=duration=${duration}[out]`,
+  );
+  args.push(
     '-filter_complex',
-    '[0:v]scale=1440:900,fps=30,format=yuv420p[base];[base][1:v]overlay=0:0:format=auto,format=yuv420p[out]',
+    filters.join(';'),
     '-map',
     '[out]',
     '-an',
@@ -104,7 +176,8 @@ function nativeScene(index, startSec) {
     '-movflags',
     '+faststart',
     scenePath(index),
-  ]);
+  );
+  run('ffmpeg', args);
 }
 
 function responseScene(index) {
@@ -121,12 +194,20 @@ function responseScene(index) {
     '30',
     '-i',
     resolve(assets, 'response-board.png'),
+    '-loop',
+    '1',
+    '-framerate',
+    '30',
+    '-i',
+    resolve(assets, 'response-release.png'),
     '-t',
     String(duration),
     '-filter_complex',
     `[0:v]scale=1440:810:force_original_aspect_ratio=decrease,pad=1440:900:0:45:color=0x07100f,tpad=stop_mode=clone:stop_duration=${duration},fps=30,format=yuv420p[response];` +
       `[1:v]format=rgba,fps=30,fade=t=in:st=2.04:d=0.24:alpha=1[board];` +
-      '[response][board]overlay=0:0:format=auto,format=yuv420p[out]',
+      `[2:v]format=rgba,fps=30[release];` +
+      '[response][release]overlay=0:0:format=auto:shortest=1[released];' +
+      '[released][board]overlay=0:0:format=auto:shortest=1,format=yuv420p[out]',
     '-map',
     '[out]',
     '-an',
@@ -145,9 +226,8 @@ function responseScene(index) {
 function learnerActionScene(index) {
   const duration = coreDurations[index] + transitionDuration;
   const internalTransition = 0.35;
-  const targetDuration = 2.8;
-  const selectedDuration = 2.4;
-  const responseDuration = 2.8;
+  const targetDuration = 2.35;
+  const selectedDuration = duration - targetDuration + internalTransition;
   run('ffmpeg', [
     '-y',
     '-v',
@@ -164,24 +244,10 @@ function learnerActionScene(index) {
     '30',
     '-i',
     resolve(assets, '09-click-selected.png'),
-    '-ss',
-    '79.9',
-    '-i',
-    nativeCapture,
-    '-loop',
-    '1',
-    '-framerate',
-    '30',
-    '-i',
-    resolve(assets, 'native-label.png'),
     '-filter_complex',
     `[0:v]scale=1440:900,fps=30,format=yuv420p,trim=duration=${targetDuration},setpts=PTS-STARTPTS[target];` +
       `[1:v]scale=1440:900,fps=30,format=yuv420p,trim=duration=${selectedDuration},setpts=PTS-STARTPTS[selected];` +
-      `[2:v]scale=1440:900,fps=30,format=yuv420p,trim=duration=${responseDuration},setpts=PTS-STARTPTS[native];` +
-      `[3:v]format=rgba,fps=30,trim=duration=${responseDuration},setpts=PTS-STARTPTS[nativeLabel];` +
-      `[native][nativeLabel]overlay=0:0:format=auto,format=yuv420p[response];` +
-      `[target][selected]xfade=transition=fadeblack:duration=${internalTransition}:offset=${targetDuration - internalTransition}[targetSelected];` +
-      `[targetSelected][response]xfade=transition=fadeblack:duration=${internalTransition}:offset=${targetDuration + selectedDuration - internalTransition * 2}[out]`,
+      `[target][selected]xfade=transition=fadeblack:duration=${internalTransition}:offset=${targetDuration - internalTransition}[out]`,
     '-map',
     '[out]',
     '-an',
@@ -199,25 +265,21 @@ function learnerActionScene(index) {
   ]);
 }
 
-stillScene(0, '00-opening.png');
-stillScene(1, '01-source.png');
-stillScene(2, '02-learner-need.png');
-stillScene(3, '03-request.png');
-stillScene(4, '04-webmcp.png');
-// Show the native inspection and draft update before the editorial explanation
-// of the learner pause. The later native segment is the learner-turn proof.
-nativeScene(5, 8.5);
-stillScene(6, '06-draft.png');
-stillScene(7, '07-waiting.png');
-// The editorial human-action annotation makes the learner's choice legible
-// before the native response clip begins. The response still comes from the
-// real capture.
-learnerActionScene(8);
-responseScene(9);
-stillScene(10, '10-outcome.png');
-nativeScene(11, 102.3);
-stillScene(12, '12-code.png');
-stillScene(13, '13-end.png');
+for (const [index, scene] of STUDIO_DEMO_SCENES.entries()) {
+  if (scene.kind === 'still') {
+    stillScene(index, scene.asset);
+  } else if (scene.kind === 'problemIntro') {
+    problemIntroScene(index);
+  } else if (scene.kind === 'native') {
+    nativeScene(index, scene.captureSlices);
+  } else if (scene.kind === 'learnerAction') {
+    learnerActionScene(index);
+  } else if (scene.kind === 'response') {
+    responseScene(index);
+  } else {
+    throw new Error(`Unsupported Studio demo scene kind: ${scene.kind}`);
+  }
+}
 
 const args = ['-y', '-v', 'error'];
 for (let index = 0; index < coreDurations.length; index += 1) {
@@ -226,18 +288,16 @@ for (let index = 0; index < coreDurations.length; index += 1) {
 args.push('-i', narration);
 
 const transitions = [
+  'wipeleft',
   'fadeblack',
   'fadeblack',
-  'fadeblack',
-  'fadeblack',
-  'fadeblack',
-  'fadeblack',
-  'fadeblack',
-  'fadeblack',
-  'fadeblack',
-  'fadeblack',
-  'fadeblack',
-  'fadeblack',
+  'wipeleft',
+  'wipeleft',
+  'wipeleft',
+  'wipeleft',
+  'wipeleft',
+  'wipeleft',
+  'wipeleft',
   'fadeblack',
 ];
 const filters = [];
@@ -268,7 +328,7 @@ args.push(
   '-map',
   `${coreDurations.length}:a:0`,
   '-t',
-  '109.5',
+  String(STUDIO_DEMO_DURATION_SEC),
   '-r',
   '30',
   '-c:v',

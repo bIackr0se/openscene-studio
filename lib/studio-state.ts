@@ -155,7 +155,8 @@ export const STUDIO_MEDIA: Record<StudioMediaId, StudioMedia> = {
   step_free: {
     id: 'step_free',
     label: 'Lift answer',
-    purpose: 'The filmed answer shows the lift directions to platform two.',
+    purpose:
+      'The recorded answer shows the lift directions to railway platform two.',
     video: '/rehearsal-step-free-v1.mp4',
     poster: '/rehearsal-step-free-v1.jpg',
     durationSec: 6,
@@ -163,7 +164,8 @@ export const STUDIO_MEDIA: Record<StudioMediaId, StudioMedia> = {
   next_train: {
     id: 'next_train',
     label: 'Connection answer',
-    purpose: 'The filmed answer shows the next departure from platform two.',
+    purpose:
+      'The recorded answer shows the next departure from railway platform two.',
     video: '/rehearsal-next-train-v1.mp4',
     poster: '/rehearsal-next-train-v1.jpg',
     durationSec: 6,
@@ -171,7 +173,7 @@ export const STUDIO_MEDIA: Record<StudioMediaId, StudioMedia> = {
   repeat: {
     id: 'repeat',
     label: 'Repeat answer',
-    purpose: 'The filmed answer repeats the original station announcement.',
+    purpose: 'The recorded answer repeats the original station announcement.',
     video: '/rehearsal-clarify-v1.mp4',
     poster: '/rehearsal-clarify-v1.jpg',
     durationSec: 6,
@@ -185,10 +187,10 @@ export const STUDIO_RESPONSE_PACKS: Record<
   step_free: {
     id: 'step_free',
     label: 'Lift directions',
-    purpose: 'The trainer-approved filmed answer gives the lift directions.',
+    purpose: 'The trainer-approved recorded answer gives the lift directions.',
     responseText: 'Der Aufzug ist links. Fahren Sie dann weiter zu Gleis zwei.',
     responseTranslation:
-      'The lift is on the left. Then continue to platform two.',
+      'The lift is on the left. Then continue to railway platform two.',
     answerBoard: 'LIFT → PLATFORM 2',
     mediaId: 'step_free',
     responseAtSec: 2.04,
@@ -196,10 +198,10 @@ export const STUDIO_RESPONSE_PACKS: Record<
   next_train: {
     id: 'next_train',
     label: 'Next connection answer',
-    purpose: 'The trainer-approved filmed answer gives the next departure.',
+    purpose: 'The trainer-approved recorded answer gives the next departure.',
     responseText: 'Der nächste Zug fährt in zwölf Minuten von Gleis zwei.',
     responseTranslation:
-      'The next train leaves in twelve minutes from platform two.',
+      'The next train leaves in twelve minutes from railway platform two.',
     answerBoard: '12 MIN → PLATFORM 2',
     mediaId: 'next_train',
     responseAtSec: 2.04,
@@ -207,11 +209,11 @@ export const STUDIO_RESPONSE_PACKS: Record<
   repeat: {
     id: 'repeat',
     label: 'Original announcement answer',
-    purpose: 'The trainer-approved filmed answer repeats the original cue.',
+    purpose: 'The trainer-approved recorded answer repeats the original cue.',
     responseText:
       'Dieser Zug endet heute hier. Ihr Anschluss fährt von Gleis zwei.',
     responseTranslation:
-      'This train terminates here today. Your connection leaves from platform two.',
+      'This train terminates at this station today. Your connection leaves from railway platform two.',
     answerBoard: 'REPEAT → PLATFORM 2',
     mediaId: 'repeat',
     responseAtSec: 2.04,
@@ -279,9 +281,10 @@ const REPEAT_BRANCH = branchFromInput(
 export const SAMPLE_STEP_FREE_BRANCH: StudioBranchInput = {
   id: 'step_free',
   title: 'Ask for the lift',
-  learnerNeed: 'The learner cannot use stairs and needs platform two.',
+  learnerNeed:
+    'The learner cannot use stairs and needs the lift to reach the connecting train on railway platform two.',
   learnerLine: 'Wo ist der Aufzug zu Gleis zwei?',
-  learnerLineTranslation: 'Where is the lift to platform two?',
+  learnerLineTranslation: 'Where is the lift to railway platform two?',
   responsePackId: 'step_free',
   pauseAtSec: 2.04,
 };
@@ -335,7 +338,7 @@ function initialProject(): StudioProject {
         endSec: 2.04,
         text: 'Dieser Zug endet heute hier. Ihr Anschluss fährt von Gleis zwei.',
         translation:
-          'This train terminates here today. Your connection leaves from platform two.',
+          'This train terminates at this station today. Your connection leaves from railway platform two.',
       },
     },
     branches: [cloneBranch(NEXT_TRAIN_BRANCH), cloneBranch(REPEAT_BRANCH)],

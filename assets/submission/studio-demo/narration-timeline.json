@@ -1,100 +1,155 @@
 {
-  "schemaVersion": 1,
-  "durationSec": 109.5,
+  "schemaVersion": 2,
+  "durationSec": 100,
   "model": "mlx-community/Kokoro-82M-bf16",
   "voice": "af_heart",
   "language": "a",
-  "speed": 0.96,
+  "speed": 1.0,
   "cues": [
     {
-      "id": "context",
-      "startSec": 0.5,
-      "endSec": 8.1,
-      "text": "Before changing trains in Germany, a passenger who cannot use stairs practises at home how to ask for the lift."
+      "id": "problem",
+      "startSec": 0.1,
+      "endSec": 8.9,
+      "setting": "The original fictional German train-transfer lesson, followed by its missing learner turn",
+      "actor": "OpenScene and a learner who cannot use stairs",
+      "object": "The recorded station announcement and the missing German lift question",
+      "action": "OpenScene shows what the lesson already says and the access question it omits",
+      "visibleEvidence": "The exact announcement, English meaning, railway platform two, learner access need, and missing lift question appear in sequence",
+      "consequence": "The learner can understand the transfer announcement but cannot yet rehearse asking for the lift",
+      "text": "The lesson says this train ends here and the connection leaves from platform two. The learner cannot use stairs. The lift question is missing."
     },
     {
-      "id": "lesson_gap",
-      "startSec": 8.7,
-      "endSec": 15.2,
-      "text": "The existing station lesson explains platform two. It never teaches the lift question."
+      "id": "trainer_request",
+      "startSec": 9.15,
+      "endSec": 14.9,
+      "setting": "ChatGPT beside the OpenScene lesson already open in the browser",
+      "actor": "The language trainer",
+      "object": "The exact request shown to ChatGPT",
+      "action": "The trainer asks ChatGPT to add the approved lift practice and preview the learner's turn",
+      "visibleEvidence": "The complete request is highlighted on screen before the recorded browser result",
+      "consequence": "ChatGPT receives one precise edit request for the open lesson",
+      "text": "The trainer asks ChatGPT to add the missing lift question and recorded answer."
     },
     {
-      "id": "learner_need",
-      "startSec": 16.4,
-      "endSec": 22.8,
-      "text": "A trainer is preparing the lesson for this learner, who does not know the German words."
+      "id": "native_result",
+      "startSec": 15.25,
+      "endSec": 28.7,
+      "setting": "A privacy-cropped recording of the real ChatGPT and OpenScene browser session",
+      "actor": "ChatGPT and the same live OpenScene page",
+      "object": "Three named WebMCP calls, their exact input excerpt, and the resulting page revision",
+      "action": "ChatGPT inspects the project, adds the approved lift practice, and opens the preview",
+      "visibleEvidence": "Four recorded jump cuts show inspect_project, propose_branch, preview_branch, the exact input excerpt, and OpenScene reaching revision two",
+      "consequence": "The viewer sees the real agent session change the same page without watching model wait time",
+      "text": "The recorded ChatGPT session shows three WebMCP calls: inspect, add the lift practice, and preview. OpenScene reaches revision two and pauses for the learner."
     },
     {
-      "id": "exact_request",
-      "startSec": 23.8,
-      "endSec": 35.1,
-      "text": "This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it."
-    },
-    {
-      "id": "webmcp_difference",
-      "startSec": 36.0,
-      "endSec": 43.6,
-      "text": "ChatGPT can translate the sentence. WebMCP adds the missing practice turn to this open video."
-    },
-    {
-      "id": "native_tools",
-      "startSec": 43.8,
-      "endSec": 51.3,
-      "text": "ChatGPT reads the open lesson, adds the lift practice, and opens its preview through the page's tools."
+      "id": "why_webmcp",
+      "startSec": 29.05,
+      "endSec": 36.95,
+      "setting": "A comparison between ordinary chat and the open OpenScene project",
+      "actor": "ChatGPT through WebMCP",
+      "object": "The open lesson and its approved training content",
+      "action": "ChatGPT edits the open lesson through actions defined by OpenScene",
+      "visibleEvidence": "The frame contrasts a translated sentence with the WebMCP path into OpenScene's fixed content boundary",
+      "consequence": "The lesson changes without letting ChatGPT invent the recording or timing",
+      "text": "A normal chat translates the question. WebMCP changes the lesson. OpenScene controls recording and timing."
     },
     {
       "id": "page_boundary",
-      "startSec": 52.1,
-      "endSec": 58.2,
-      "text": "OpenScene supplies the approved words, filmed answer, route board, and timing."
-    },
-    {
-      "id": "draft_link",
-      "startSec": 59.0,
-      "endSec": 63.8,
-      "text": "The draft links the learner's need, German line, and pause."
+      "startSec": 37.3,
+      "endSec": 45.7,
+      "setting": "The approved response section of the OpenScene editor",
+      "actor": "OpenScene",
+      "object": "The German lift question, recorded answer, route board, and pause timing",
+      "action": "OpenScene links the coordinated practice step selected by ChatGPT",
+      "visibleEvidence": "The four approved parts are highlighted together in the editor",
+      "consequence": "The trainer can inspect the complete change before preview",
+      "text": "OpenScene links the German lift question, recorded answer, lift-route board, and exact pause time as one practice step."
     },
     {
       "id": "learner_pause",
-      "startSec": 64.8,
-      "endSec": 69.7,
-      "text": "During preview, the lesson stops before the answer and waits for the learner."
+      "startSec": 46.3,
+      "endSec": 53.7,
+      "setting": "The OpenScene preview at the new learner turn",
+      "actor": "The OpenScene video player",
+      "object": "The recorded station-employee answer",
+      "action": "The video stops and waits for the learner's choice",
+      "visibleEvidence": "The player says Paused for the learner and the timeline marks the learner's turn",
+      "consequence": "The recorded answer cannot begin before the learner acts",
+      "text": "In preview, OpenScene stops before the recorded answer and waits for the learner's German lift question."
     },
     {
       "id": "learner_choice",
-      "startSec": 70.1,
-      "endSec": 73.8,
-      "text": "The learner selects the matching German line on the page."
+      "startSec": 54.3,
+      "endSec": 60.7,
+      "setting": "The learner's turn inside the paused OpenScene preview",
+      "actor": "The learner",
+      "object": "The highlighted German lift question",
+      "action": "The learner reads the highlighted meaning and selects the sentence that asks for the lift",
+      "visibleEvidence": "The cursor highlights and then selects Wo ist der Aufzug zu Gleis zwei, with its English meaning visible",
+      "consequence": "OpenScene can release the approved recorded response",
+      "text": "The highlighted line means: Where is the lift to railway platform two? The learner selects it."
     },
     {
-      "id": "response",
-      "startSec": 74.2,
-      "endSec": 82.4,
-      "text": "Only then does the approved filmed response start, with the LIFT TO PLATFORM 2 board."
+      "id": "recorded_response",
+      "startSec": 61.3,
+      "endSec": 70.5,
+      "setting": "The approved recorded response after the learner's choice",
+      "actor": "The recorded station employee",
+      "object": "The fictional lift route and German answer",
+      "action": "The station employee on screen presents the answer and route board",
+      "visibleEvidence": "The station employee gestures toward the lift route while the German answer, English meaning, and route board are visible",
+      "consequence": "The learner sees the response that follows the German lift question",
+      "text": "The learner's German lift question unlocks the response. The station employee points left and presents the lift route to platform two."
     },
     {
-      "id": "rehearsed",
-      "startSec": 83.4,
-      "endSec": 89.4,
-      "text": "The learner can rehearse the exact exchange before the trip."
+      "id": "learner_outcome",
+      "startSec": 71.3,
+      "endSec": 78.7,
+      "setting": "The completed at-home lesson preview",
+      "actor": "The learner",
+      "object": "The complete lift-request exchange",
+      "action": "The learner practises the German question and understands the recorded answer",
+      "visibleEvidence": "The completed German question, recorded answer, English meanings, and Complete exchange rehearsed label are visible together",
+      "consequence": "The learner has rehearsed the exchange before travelling",
+      "text": "The learner has practised the complete exchange: ask for the lift in German, then understand the recorded answer."
     },
     {
       "id": "trainer_decision",
-      "startSec": 90.2,
-      "endSec": 96.1,
-      "text": "The trainer keeps the path. Undo remains, and every edit has a visible revision."
+      "startSec": 79.3,
+      "endSec": 85.7,
+      "setting": "The completed practice branch in the OpenScene editor",
+      "actor": "The language trainer",
+      "object": "The new lift-practice branch",
+      "action": "The trainer keeps the branch or undoes the change",
+      "visibleEvidence": "The page revision, Keep practice, Undo change, and trainer-decision label are visible",
+      "consequence": "The trainer remains responsible for the final lesson",
+      "text": "The trainer reviews one project revision and chooses Keep Practice or Undo Change."
     },
     {
       "id": "implementation",
-      "startSec": 96.3,
-      "endSec": 103.4,
-      "text": "The page registers six narrow WebMCP tools. Filmed answers and timing stay page-approved."
+      "startSec": 86.3,
+      "endSec": 93.7,
+      "setting": "The WebMCP implementation proof for the OpenScene page",
+      "actor": "OpenScene, ChatGPT, the learner, and the trainer",
+      "object": "Six page-defined WebMCP tools and two human-owned actions",
+      "action": "OpenScene exposes narrow tools while preserving learner and trainer decisions",
+      "visibleEvidence": "The literal document.modelContext.registerTool call, all six tool names, and the human-decision statement are visible",
+      "consequence": "ChatGPT can edit the project only through the actions defined by the page",
+      "text": "The page registers six WebMCP tools. The learner and trainer keep the final decisions."
     },
     {
       "id": "scope",
-      "startSec": 103.5,
-      "endSec": 109.2,
-      "text": "This fictional lesson is for practice at home. It gives no live travel guidance."
+      "startSec": 94.3,
+      "endSec": 99.7,
+      "setting": "The closing scope statement",
+      "actor": "The OpenScene prototype",
+      "object": "Fixed fictional training content",
+      "action": "OpenScene provides an at-home practice lesson without reading live station systems",
+      "visibleEvidence": "The end card names the fictional at-home scope, live app, public source, and no-live-guidance boundary",
+      "consequence": "The demo makes no claim of live travel guidance",
+      "text": "This fictional OpenScene lesson has no live station data or travel guidance.",
+      "antecedent": "the OpenScene prototype shown in the closing frame"
     }
   ]
 }

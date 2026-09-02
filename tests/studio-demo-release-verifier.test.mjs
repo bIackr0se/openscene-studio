@@ -5,11 +5,12 @@ import {
   copyFileSync,
   mkdtempSync,
   readFileSync,
+  rmSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import test from 'node:test';
+import test, { after } from 'node:test';
 
 import {
   EXPECTED_ANSWER_BOARD,
@@ -17,6 +18,8 @@ import {
   EXPECTED_REQUEST,
   EXPECTED_STUDIO_EVIDENCE_MARKERS,
   EXPECTED_STUDIO_TOOL_NAMES,
+  MAX_DEMO_DURATION_SEC,
+  MIN_DEMO_DURATION_SEC,
   NATIVE_PROOF_SCHEMA_VERSION,
   REQUIRED_STUDIO_EVIDENCE_MARKERS,
   STUDIO_DEMO_MANIFEST_VERSION,
@@ -24,9 +27,11 @@ import {
   STUDIO_RELEASE_ID,
   validateStudioDemoRelease,
 } from '../scripts/verify-studio-demo-release.mjs';
+import { STUDIO_DEMO_DURATION_SEC } from '../scripts/studio-demo-plan.mjs';
 
 const REPO_ROOT = process.cwd();
 const FIXTURE_ROOT = mkdtempSync(join(tmpdir(), 'openscene-studio-demo-gate-'));
+const TEMP_ROOTS = [FIXTURE_ROOT];
 const BASE_VIDEO = join(FIXTURE_ROOT, 'studio-demo.mp4');
 const NARRATION_SOURCE = join(FIXTURE_ROOT, 'narration.wav');
 
@@ -43,9 +48,9 @@ execFileSync(
     '-f',
     'lavfi',
     '-i',
-    'sine=frequency=440:sample_rate=48000:duration=100',
+    `sine=frequency=440:sample_rate=48000:duration=${STUDIO_DEMO_DURATION_SEC}`,
     '-t',
-    '100',
+    String(STUDIO_DEMO_DURATION_SEC),
     '-c:v',
     'libx264',
     '-preset',
@@ -152,7 +157,7 @@ function makeNativeProof(root) {
       testDouble: false,
     },
     requestEvidence: {
-      source: 'editorial-card-transcribed-from-native-task',
+      source: 'editorial-card-faithful-to-native-task',
       exactText: EXPECTED_REQUEST,
       visibleBeforeNativeToolEvidence: true,
       faithfulToNativeTask: true,
@@ -284,6 +289,7 @@ function makeNativeProof(root) {
 
 function makeFixture() {
   const root = mkdtempSync(join(tmpdir(), 'openscene-studio-demo-case-'));
+  TEMP_ROOTS.push(root);
   copyFixtureMedia(root);
   writeFileSync(
     join(root, 'captions.srt'),
@@ -357,6 +363,12 @@ function makeFixture() {
   return { root, videoPath, captionsPath, manifest, proofPath };
 }
 
+after(() => {
+  for (const root of TEMP_ROOTS) {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('controlled Studio release fixture passes the complete gate', () => {
   const fixture = makeFixture();
   const result = validateStudioDemoRelease({
@@ -395,7 +407,7 @@ test('CLI returns PASS for the controlled Studio fixture', () => {
   assert.match(result.stdout, /"status": "PASS"/);
 });
 
-test('legacy rehearsal media and copy are rejected even when padded to 100 seconds', () => {
+test('legacy rehearsal media and copy are rejected even at the current demo duration', () => {
   const fixture = makeFixture();
   const legacyPath = join(fixture.root, 'openscene-demo-final.mp4');
   copyFileSync(BASE_VIDEO, legacyPath);
@@ -443,7 +455,7 @@ test('generated noise and click pipeline inputs are rejected', () => {
   );
 });
 
-test('a film outside the 95-110 second boundary is rejected', () => {
+test('a film outside the current demo duration boundary is rejected', () => {
   const fixture = makeFixture();
   const shortVideo = join(fixture.root, 'short-studio-demo.mp4');
   execFileSync(
@@ -455,7 +467,7 @@ test('a film outside the 95-110 second boundary is rejected', () => {
       '-i',
       BASE_VIDEO,
       '-t',
-      '94',
+      String(STUDIO_DEMO_DURATION_SEC - 1),
       '-c',
       'copy',
       shortVideo,
@@ -474,7 +486,9 @@ test('a film outside the 95-110 second boundary is rejected', () => {
   });
   assert.ok(
     result.findings.some((finding) =>
-      /demo duration must be 95-110 seconds/.test(finding),
+      finding.includes(
+        `demo duration must be ${MIN_DEMO_DURATION_SEC}-${MAX_DEMO_DURATION_SEC} seconds`,
+      ),
     ),
   );
 });

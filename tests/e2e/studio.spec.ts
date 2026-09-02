@@ -15,7 +15,7 @@ const TOOL_NAMES = [
 const STEP_FREE_PACK = {
   responseText: 'Der Aufzug ist links. Fahren Sie dann weiter zu Gleis zwei.',
   responseTranslation:
-    'The lift is on the left. Then continue to platform two.',
+    'The lift is on the left. Then continue to railway platform two.',
   answerBoard: 'LIFT → PLATFORM 2',
   media: '/rehearsal-step-free-v1.mp4',
   responseAtSec: 2.04,
@@ -255,19 +255,16 @@ test.describe('OpenScene Studio root page', () => {
     expect(inspection.project?.branches).toHaveLength(2);
     expect(inspection.preview?.phase).toBe('source');
     await expect(page.getByRole('heading', { level: 1 })).toContainText(
-      'Asking for help in another language',
+      'A learner cannot use the stairs.',
     );
     await expect(page.getByRole('heading', { level: 1 })).toContainText(
-      'cannot use stairs',
+      'German question for the lift.',
     );
     await expect(page.locator('.studio-brief-copy')).toContainText(
-      'never teaches how to ask for the lift',
+      'The connecting train leaves from railway platform two.',
     );
     await expect(page.locator('.studio-brief-copy')).toContainText(
-      'Wo ist der Aufzug zu Gleis zwei?',
-    );
-    await expect(page.locator('.studio-brief-copy')).toContainText(
-      'trainer-approved filmed answer',
+      'add the German lift question and the approved recorded answer',
     );
     await expect(page.locator('.studio-sheet-header span')).toHaveText(
       'EXISTING PRACTICE',
@@ -317,10 +314,10 @@ test.describe('OpenScene Studio root page', () => {
       '.studio-sample-action[data-source="webmcp"]',
     );
     await expect(webMcpStatus).toContainText(
-      'WEBMCP · CHATGPT UPDATED THIS PROJECT',
+      'WEBMCP · CHATGPT UPDATED THE OPENSCENE PROJECT',
     );
     await expect(webMcpStatus).toContainText(
-      'ChatGPT updated this project · version 01',
+      'ChatGPT updated the OpenScene project · version 01',
     );
 
     const beforeRejectedProposal = await inspectProject(page);
@@ -413,7 +410,7 @@ test.describe('OpenScene Studio root page', () => {
       'waiting_for_learner',
     );
     await expect(page.locator('.studio-human-feedback')).toHaveText(
-      'That phrase belongs to another practice path. The video is still waiting.',
+      'That German line does not ask for the lift. The OpenScene lesson is still waiting for the German lift question.',
     );
     await expect(page.getByTestId('studio-response-cue')).toHaveCount(0);
 

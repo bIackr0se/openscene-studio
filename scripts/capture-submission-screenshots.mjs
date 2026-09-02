@@ -29,7 +29,8 @@ const TOOL_NAMES = [
 const PROPOSAL = {
   id: 'step_free',
   title: 'Ask for the lift',
-  learnerNeed: 'The learner cannot use stairs and needs platform two.',
+  learnerNeed:
+    'The learner cannot use stairs and needs the lift to reach the connecting train on platform two.',
   learnerLine: 'Wo ist der Aufzug zu Gleis zwei?',
   learnerLineTranslation: 'Where is the lift to platform two?',
   responsePackId: 'step_free',

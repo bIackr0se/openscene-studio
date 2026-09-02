@@ -14,7 +14,7 @@ The final film uses one clear external narrator. The woman in the station video 
 
 3. `human-request`
 
-   This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.
+   The learner cannot use stairs. Add the trainer-approved German lift question and recorded answer to this OpenScene lesson, then preview the learner's turn.
 
 4. `page-owned-proposal`
 

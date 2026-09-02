@@ -1,59 +1,47 @@
 1
-00:00:00,500 --> 00:00:08,100
-Before changing trains in Germany, a passenger who cannot use stairs practises at home how to ask for the lift.
+00:00:00,100 --> 00:00:08,900
+The lesson says this train ends here and the connection leaves from platform two. The learner cannot use stairs. The lift question is missing.
 
 2
-00:00:08,700 --> 00:00:15,200
-The existing station lesson explains platform two. It never teaches the lift question.
+00:00:09,150 --> 00:00:14,900
+The trainer asks ChatGPT to add the missing lift question and recorded answer.
 
 3
-00:00:16,400 --> 00:00:22,800
-A trainer is preparing the lesson for this learner, who does not know the German words.
+00:00:15,250 --> 00:00:28,700
+The recorded ChatGPT session shows three WebMCP calls: inspect, add the lift practice, and preview. OpenScene reaches revision two and pauses for the learner.
 
 4
-00:00:23,800 --> 00:00:35,100
-This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.
+00:00:29,050 --> 00:00:36,950
+A normal chat translates the question. WebMCP changes the lesson. OpenScene controls recording and timing.
 
 5
-00:00:36,000 --> 00:00:43,600
-ChatGPT can translate the sentence. WebMCP adds the missing practice turn to this open video.
+00:00:37,300 --> 00:00:45,700
+OpenScene links the German lift question, recorded answer, lift-route board, and exact pause time as one practice step.
 
 6
-00:00:43,800 --> 00:00:51,300
-ChatGPT reads the open lesson, adds the lift practice, and opens its preview through the page's tools.
+00:00:46,300 --> 00:00:53,700
+In preview, OpenScene stops before the recorded answer and waits for the learner's German lift question.
 
 7
-00:00:52,100 --> 00:00:58,200
-OpenScene supplies the approved words, filmed answer, route board, and timing.
+00:00:54,300 --> 00:01:00,700
+The highlighted line means: Where is the lift to railway platform two? The learner selects it.
 
 8
-00:00:59,000 --> 00:01:03,800
-The draft links the learner's need, German line, and pause.
+00:01:01,300 --> 00:01:10,500
+The learner's German lift question unlocks the response. The station employee points left and presents the lift route to platform two.
 
 9
-00:01:04,800 --> 00:01:09,700
-During preview, the lesson stops before the answer and waits for the learner.
+00:01:11,300 --> 00:01:18,700
+The learner has practised the complete exchange: ask for the lift in German, then understand the recorded answer.
 
 10
-00:01:10,100 --> 00:01:13,800
-The learner selects the matching German line on the page.
+00:01:19,300 --> 00:01:25,700
+The trainer reviews one project revision and chooses Keep Practice or Undo Change.
 
 11
-00:01:14,200 --> 00:01:22,400
-Only then does the approved filmed response start, with the LIFT TO PLATFORM 2 board.
+00:01:26,300 --> 00:01:33,700
+The page registers six WebMCP tools. The learner and trainer keep the final decisions.
 
 12
-00:01:23,400 --> 00:01:29,400
-The learner can rehearse the exact exchange before the trip.
-
-13
-00:01:30,200 --> 00:01:36,100
-The trainer keeps the path. Undo remains, and every edit has a visible revision.
-
-14
-00:01:36,300 --> 00:01:43,400
-The page registers six narrow WebMCP tools. Filmed answers and timing stay page-approved.
-
-15
-00:01:43,500 --> 00:01:49,200
-This fictional lesson is for practice at home. It gives no live travel guidance.
+00:01:34,300 --> 00:01:39,700
+This fictional OpenScene lesson has no live station data or travel guidance.

@@ -15,7 +15,7 @@ The final demo can be a 95 to 110 second film. The native proof itself may be sh
 
 Use this exact request:
 
-> This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.
+> The learner cannot use stairs. Add the trainer-approved German lift question and recorded answer to this OpenScene lesson, then preview the learner's turn.
 
 The request describes the learner's need. The page supplies the station project, source cue, approved answer pack, filmed response, and timing. That separation is the WebMCP evidence.
 
