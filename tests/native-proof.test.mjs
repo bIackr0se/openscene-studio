@@ -178,7 +178,7 @@ function makeProof() {
         testDouble: false,
       },
       requestEvidence: {
-        source: 'editorial-card-transcribed-from-native-task',
+        source: 'editorial-card-faithful-to-native-task',
         exactText: EXPECTED_NATIVE_PROOF_REQUEST,
         visibleBeforeNativeToolEvidence: true,
         faithfulToNativeTask: true,

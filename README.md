@@ -1,10 +1,12 @@
 # OpenScene Studio
 
-[Live app](https://openscene-webmcp.jijou-leo40.chatgpt.site/) · [Demo video](https://youtu.be/j5Htg-fsE4E) · [Public source](https://github.com/bIackr0se/openscene-studio) · [MIT license](LICENSE)
+[Live app](https://openscene-webmcp.jijou-leo40.chatgpt.site/) · [Public source](https://github.com/bIackr0se/openscene-studio) · [MIT license](LICENSE)
+
+The final 100-second demo and matching source update are prepared locally. The existing public video is an earlier candidate and is not the release film described below.
 
 OpenScene Studio lets a trainer ask ChatGPT to add one missing learner turn to a video lesson already open in the browser.
 
-In this example, a German train lesson explains that the next train leaves from platform two, but it never teaches a passenger who cannot use stairs how to ask for the lift. The learner does not know the German words. ChatGPT proposes the trainer-approved question `Wo ist der Aufzug zu Gleis zwei?`. OpenScene pauses the video, waits for the learner to choose the line, and then plays the approved filmed answer.
+In this example, a German train lesson explains that the next train leaves from platform two, but it never teaches a passenger who cannot use stairs how to ask for the lift. The learner does not know the German words. ChatGPT proposes the trainer-approved question `Wo ist der Aufzug zu Gleis zwei?`. OpenScene pauses the video, waits for the learner to choose the line, and then releases the trainer-approved response clip.
 
 The trainer prepares the lesson. The learner practises at home. The filmed partner appears in the approved response clip and remains silent. This prototype uses a fictional station lesson. It provides no live travel data, wayfinding, speech recognition, character perception, or measured learning result.
 
@@ -23,11 +25,11 @@ WebMCP gives ChatGPT a narrow interface to the OpenScene project already open on
 ## Complete proof loop
 
 1. Open the fictional German station project.
-2. Ask ChatGPT: “This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.”
+2. Ask ChatGPT: “The learner cannot use stairs. Add the trainer-approved German lift question and recorded answer to this OpenScene lesson, then preview the learner's turn.”
 3. ChatGPT inspects the project and proposes the `ask_for_lift` branch with the page-approved `step_free` response pack.
 4. OpenScene shows the draft and the new page version.
 5. Preview stops at `PAUSED FOR THE LEARNER` before the filmed answer.
-6. The learner chooses `Wo ist der Aufzug zu Gleis zwei?`. The page then releases the filmed answer and the `LIFT → PLATFORM 2` board.
+6. The learner chooses `Wo ist der Aufzug zu Gleis zwei?`. The page then unlocks the response clip and the `LIFT → PLATFORM 2` board.
 7. The trainer clicks `Keep path` or `Undo edit`.
 
 The learner's line and the trainer's approval remain human-controlled page actions.
@@ -72,7 +74,7 @@ Open `http://localhost:3000` in ChatGPT's in-app browser. Google Chrome 149 or n
 Use this request:
 
 ```text
-This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.
+The learner cannot use stairs. Add the trainer-approved German lift question and recorded answer to this OpenScene lesson, then preview the learner's turn.
 ```
 
 The expected native sequence is:
@@ -89,9 +91,9 @@ The `Preview the new lift question` button is a Studio-only preview and is expli
 
 ## Release artifacts and media truth
 
-The final demo render is `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`. It is 109.5 seconds, with H.264 video, stereo AAC audio, and the English caption sidecar at `assets/submission/studio-demo/captions.srt`.
+The final demo render is `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`. It is 100 seconds, with H.264 video, stereo AAC audio, and the English caption sidecar at `assets/submission/studio-demo/captions.srt`.
 
-The film opens with an editorial request card that faithfully restates the real native task. A visible label identifies it as editorial context. Later footage is an authentic privacy-cropped ChatGPT and OpenScene capture marked as recorded live. Conversation names and unrelated history are excluded. A separate editorial human-action frame makes the real learner click readable before the native response resumes.
+The film opens on the lesson's recorded announcement and the missing lift question. It then shows the trainer's request and four jump cuts from the authentic privacy-cropped ChatGPT and OpenScene session. The jump cuts show the three page-tool calls, the exact branch input, revision two, and the learner pause. Conversation names, unrelated history, model waiting time, and the composer chrome are excluded. Later frames show the learner's page action and the unlocked response clip at normal playback size.
 
 The privacy-cropped native proof capture is retained locally outside the public source archive. The tracked proof template and verifier define its evidence contract. The five prepared screenshots are in `assets/submission/screenshots/`.
 

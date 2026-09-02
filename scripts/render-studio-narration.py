@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 from pathlib import Path
@@ -12,6 +13,25 @@ from pathlib import Path
 
 def run(command: list[str]) -> None:
     subprocess.run(command, check=True)
+
+
+def media_duration(path: Path) -> float:
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration",
+            "-of",
+            "default=noprint_wrappers=1:nokey=1",
+            str(path),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return float(result.stdout.strip())
 
 
 def srt_timestamp(seconds: float) -> str:
@@ -22,6 +42,19 @@ def srt_timestamp(seconds: float) -> str:
     return f"{hours:02d}:{minutes:02d}:{whole_seconds:02d},{milliseconds:03d}"
 
 
+def segment_fingerprint(timeline: dict, cue: dict) -> str:
+    payload = {
+        "model": timeline["model"],
+        "voice": timeline["voice"],
+        "language": timeline["language"],
+        "speed": timeline["speed"],
+        "cueId": cue["id"],
+        "text": cue["text"],
+    }
+    encoded = json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--timeline", required=True)
@@ -29,6 +62,7 @@ def main() -> int:
     parser.add_argument("--output", required=True)
     parser.add_argument("--captions", required=True)
     parser.add_argument("--segments-dir", required=True)
+    parser.add_argument("--reuse-segments", action="store_true")
     args = parser.parse_args()
 
     timeline_path = Path(args.timeline).resolve()
@@ -39,37 +73,80 @@ def main() -> int:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     captions_path.parent.mkdir(parents=True, exist_ok=True)
     segments_dir.mkdir(parents=True, exist_ok=True)
-    for stale_segment in segments_dir.glob("*.wav"):
-        stale_segment.unlink()
+    cache_path = segments_dir / "segments.manifest.json"
+    cached_segments: dict[str, str] = {}
+    if args.reuse_segments and cache_path.exists():
+        try:
+            cache = json.loads(cache_path.read_text(encoding="utf-8"))
+            if cache.get("schemaVersion") == 1 and isinstance(cache.get("segments"), dict):
+                cached_segments = cache["segments"]
+        except json.JSONDecodeError as error:
+            raise RuntimeError(f"Invalid narration segment cache: {cache_path}") from error
+    if not args.reuse_segments:
+        for stale_segment in segments_dir.glob("*.wav"):
+            stale_segment.unlink()
+        cache_path.unlink(missing_ok=True)
 
     cues = timeline["cues"]
+    expected_segment_names = {
+        f"{index:02d}-{cue['id']}.wav" for index, cue in enumerate(cues, start=1)
+    }
+    for stale_segment in segments_dir.glob("*.wav"):
+        if stale_segment.name not in expected_segment_names:
+            stale_segment.unlink()
+
+    next_cache: dict[str, str] = {}
+    duration_findings: list[str] = []
     for index, cue in enumerate(cues, start=1):
         prefix = f"{index:02d}-{cue['id']}"
         segment = segments_dir / f"{prefix}.wav"
-        if segment.exists():
-            segment.unlink()
-        run(
-            [
-                args.tts_command,
-                "--model",
-                timeline["model"],
-                "--voice",
-                timeline["voice"],
-                "--lang_code",
-                timeline["language"],
-                "--speed",
-                str(timeline["speed"]),
-                "--text",
-                cue["text"],
-                "--output_path",
-                str(segments_dir),
-                "--file_prefix",
-                prefix,
-                "--audio_format",
-                "wav",
-                "--join_audio",
-            ]
+        fingerprint = segment_fingerprint(timeline, cue)
+        can_reuse = segment.exists() and cached_segments.get(prefix) == fingerprint
+        if not can_reuse:
+            segment.unlink(missing_ok=True)
+            run(
+                [
+                    args.tts_command,
+                    "--model",
+                    timeline["model"],
+                    "--voice",
+                    timeline["voice"],
+                    "--lang_code",
+                    timeline["language"],
+                    "--speed",
+                    str(timeline["speed"]),
+                    "--text",
+                    cue["text"],
+                    "--output_path",
+                    str(segments_dir),
+                    "--file_prefix",
+                    prefix,
+                    "--audio_format",
+                    "wav",
+                    "--join_audio",
+                ]
+            )
+        next_cache[prefix] = fingerprint
+        available = float(cue["endSec"]) - float(cue["startSec"])
+        spoken = media_duration(segment)
+        if spoken > available + 0.03:
+            duration_findings.append(
+                f"{cue['id']} narration is {spoken:.3f}s but its visible cue window is "
+                f"only {available:.3f}s"
+            )
+
+    cache_path.write_text(
+        json.dumps(
+            {"schemaVersion": 1, "segments": next_cache},
+            indent=2,
+            sort_keys=True,
         )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    if duration_findings:
+        raise RuntimeError("\n".join(duration_findings))
 
     duration = float(timeline["durationSec"])
     ffmpeg = [

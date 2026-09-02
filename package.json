@@ -18,6 +18,7 @@
     "verify:native-proof": "node scripts/verify-native-proof.mjs",
     "verify:demo-delivery": "node scripts/verify-demo-delivery.mjs",
     "verify:studio-demo-release": "node scripts/verify-studio-demo-release.mjs",
+    "verify:studio-narration": "node scripts/validate-studio-narration.mjs",
     "build:public-source": "node scripts/build-public-source-snapshot.mjs",
     "render:social-card": "node scripts/render-social-card.mjs",
     "capture:submission-screenshots": "node scripts/capture-submission-screenshots.mjs",

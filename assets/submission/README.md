@@ -1,6 +1,6 @@
 # OpenScene submission assets
 
-This directory holds the prepared WebMCP Challenge evidence. The live app, source repository, and final video are public. The Devpost entry remains unsubmitted.
+This directory holds the prepared WebMCP Challenge evidence. The final source update and final video remain local until the owner authorizes release. The existing public app, repository, and YouTube video are earlier candidates. The Devpost entry remains unsubmitted.
 
 ## Studio screenshots
 
@@ -16,17 +16,17 @@ The release set contains five judge-facing images. `npm run capture:submission-s
 
 ## Submission film
 
-The final 109.5-second film is `studio-demo/openscene-studio-webmcp-demo.mp4`. [`../../DEMO-PLAN.md`](../../DEMO-PLAN.md) records the sequence. [`demo/NARRATION-GUIDE.md`](demo/NARRATION-GUIDE.md) contains the matching voice brief.
+The final 100-second film is `studio-demo/openscene-studio-webmcp-demo.mp4`. [`../../DEMO-PLAN.md`](../../DEMO-PLAN.md) records the sequence. [`demo/NARRATION-GUIDE.md`](demo/NARRATION-GUIDE.md) contains the matching voice brief.
 
 The privacy-cropped native excerpt shows:
 
-1. the ChatGPT task context;
-2. the live project trace and exact tool inputs;
-3. a step-free proposal using `responsePackId: "step_free"`;
-4. the same OpenScene page changing to the new branch and preview;
-5. the learner waiting state, filmed response, answer board, and trainer keep action.
+1. `openscene_inspect_project` and the inspected project state;
+2. `openscene_propose_branch` with `expectedRevision: 0`;
+3. `openscene_preview_branch` with `expectedRevision: 1`;
+4. the exact `ask_for_lift` input, `responsePackId: "step_free"`, and 2.04-second pause;
+5. the same OpenScene page at revision two, paused for the learner.
 
-The full trainer request appears first on a clearly labeled editorial context card because it is collapsed in the privacy-cropped native footage. The six registered tool names appear later in a clearly labeled implementation frame. A separate editorial human-action frame makes the learner's brief page click readable before the native response resumes. None of these editorial frames imitates ChatGPT UI.
+The trainer request appears first on a clearly labeled OpenScene card because it is collapsed in the privacy-cropped native footage. The six registered tool names appear later in a clearly labeled implementation frame. The learner's line selection and trainer decision are shown as OpenScene page actions. None of these editorial frames imitates ChatGPT UI.
 
 Conversation names and unrelated history are cropped. Keep the native task context, tool inputs, project update, and page consequence unobscured.
 
@@ -43,4 +43,4 @@ Existing files under `demo/` with rehearsal-era timelines, captions, manifests, 
 - The narrator is separate from the scene partner.
 - Use the free local Superwhisper model only to verify intelligibility and caption timing.
 
-The live deployment, source repository, and final video are public. Devpost submission remains a separate release action.
+The final deployment update, source push, YouTube upload, and Devpost submission remain separate owner-controlled release actions.

@@ -6,9 +6,9 @@ Hard deadline: September 3, 2026 at 1:00 p.m. PT. Devpost displays September 3 a
 
 ## Submission links
 
-- Live site: https://openscene-webmcp.jijou-leo40.chatgpt.site/
-- Public repository: https://github.com/bIackr0se/openscene-studio
-- Public YouTube demo: https://youtu.be/j5Htg-fsE4E
+- Intended live URL: https://openscene-webmcp.jijou-leo40.chatgpt.site/ (clean-session access verification pending)
+- Repository URL reserved for publication: https://github.com/bIackr0se/openscene-studio (public push pending)
+- Public YouTube demo: final upload pending owner release (the existing YouTube video is an earlier candidate)
 - Local demo file for upload: `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`
 
 ## Project name
@@ -17,33 +17,33 @@ OpenScene Studio
 
 ## Tagline
 
-Give a video lesson the missing question.
+Add the learner's missing line to a video lesson.
 
 ## Short description
 
-A German train lesson tells a learner that the next train leaves from platform two, but never teaches a passenger who cannot use stairs how to ask for the lift. The learner does not know the German words.
+A video lesson about changing trains in Germany includes an announcement that the current train ends here and the connecting train leaves from railway platform two. It never teaches a passenger who cannot use stairs how to ask a station employee for the lift. The learner does not know the German words.
 
-OpenScene Studio lets a trainer ask ChatGPT to add that missing practice to the lesson already open in the browser. The video pauses, the learner chooses `Wo ist der Aufzug zu Gleis zwei?`, and a trainer-approved filmed answer plays. The trainer can keep or undo the change.
+OpenScene Studio lets a trainer ask ChatGPT to add that missing exchange to the OpenScene video lesson already open in the browser. OpenScene pauses the lesson before the recorded station employee's answer. The learner chooses `Wo ist der Aufzug zu Gleis zwei?`, and the page then releases the trainer-approved response clip. The trainer can keep or undo the change.
 
 ## The problem
 
-When a video lesson leaves out a phrase a learner will need, the trainer has to make a separate exercise or re-edit the lesson. A separate exercise removes the practice from the original scene. Re-editing repeats the production work.
+When a pre-recorded language lesson misses a situational exchange, the trainer must create a separate exercise or re-edit the recording. A separate exercise removes the practice from the original scene. Re-editing repeats the production work.
 
-OpenScene Studio keeps the added practice inside the original video project. The trainer describes the learner's need in ChatGPT. The page then holds the lesson cue, approved answers, video, pause point, page version, and undo history in one place.
+OpenScene Studio keeps the added practice inside the original video project. The trainer describes the learner's need in ChatGPT. The page then holds the original lesson cue, approved response clip, pause point, page version, and undo history in one place.
 
 ## What people and agents do together
 
-The trainer provides the need and remains responsible for the lesson. ChatGPT reads the open project's current state and proposes a practice path. OpenScene supplies the approved German line, its meaning, the filmed response, the answer board, and the answer timing. The learner chooses the line on the page. The trainer keeps or restores the path.
+The trainer provides the need and remains responsible for the lesson. ChatGPT reads the open project's current state and proposes a practice path. OpenScene supplies the approved German line, its meaning, the recorded response, the answer board, and the answer timing. The learner chooses the line on the page. The trainer keeps or restores the path.
 
-In this example, ChatGPT maps a plain-language accessibility request to the `ask_for_lift` branch and the page-approved `step_free` response pack. One request fills the branch fields and reconnects the cue, learner line, pause, response, and board.
+In this example, ChatGPT maps a plain-language accessibility request to the `ask_for_lift` branch and the page-approved `step_free` response pack. That request populates the branch with the existing lesson cue, the German learner line, the pause point, the recorded response clip, and the route board.
 
 ## Why WebMCP fits
 
-Ask ChatGPT in a separate chat, and it can suggest the German sentence. The video stays unchanged because that chat cannot see its cue, approved media, pause point, or project revision. Through WebMCP, OpenScene exposes those controls as narrow page-owned tools.
+An ordinary chat can suggest the German sentence, but it cannot edit the OpenScene lesson already open in the browser because it cannot access that lesson's cue, trainer-approved response clip, pause point, or revision. Through WebMCP, OpenScene exposes those controls as narrow page-owned tools.
 
 Tool results carry the current revision and state ID. Write results also expose the changed paths and preview state. ChatGPT selects a page-approved response pack. OpenScene supplies its response words, board text, media path, and timing. A stale write fails without changing the project.
 
-This creates a concrete shared loop: the trainer gives the learner need, ChatGPT proposes the edit, OpenScene pauses for the learner's line, the learner acts, and the trainer decides whether to keep the result.
+The trainer states the learner's need. ChatGPT proposes the edit. OpenScene pauses the lesson. The learner chooses the German line. The trainer decides whether to keep the result.
 
 ## Implementation
 
@@ -60,13 +60,13 @@ The proposal input contains a learner need, German line, translation, `responseP
 
 The page keeps the learner's line selection and the trainer's `Keep path` action outside the agent contract. This leaves the consequential practice and approval decisions with people.
 
-The release candidate passes 105 deterministic tests, 45 browser checks in development, and the same 45 checks against the production server. Those runs cover the schemas, stale-write rejection, learner gate, trainer approval, media, responsive layouts, automated accessibility checks, and the literal browser registration path. `npm run verify:local-release` reproduces the full local gate.
+The release suite covers schemas, stale-write rejection, the learner gate, trainer approval, media, responsive layouts, automated accessibility checks, and the literal browser registration path. `npm run verify:local-release` reproduces the full local gate.
 
 ## Demo and evidence
 
-The final demo is `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`, a 109.5-second H.264/AAC film with a separate English caption file at `assets/submission/studio-demo/captions.srt`. It explains the story from the beginning, shows the exact request, shows the authentic privacy-cropped native ChatGPT and OpenScene capture, and then shows the paused learner turn, a clearly labeled editorial explanation of the real page choice, the filmed response, and the trainer's keep decision.
+The final demo is `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`, a 100-second H.264/AAC film with a separate English caption file at `assets/submission/studio-demo/captions.srt`. The first nine seconds show the recorded announcement, its meaning, the learner's access need, and the question the lesson omitted. The next sequence shows the trainer's request, three actual WebMCP calls, the exact branch input, OpenScene at revision two, the learner's German choice, the unlocked response clip, and the trainer's Keep or Undo decision.
 
-The opening request card is an editorial card transcribed from the real native task. It gives a first-time viewer the context before the native footage begins. A visible label separates it from the recorded-live capture, where conversation names and unrelated history are cropped out.
+The film displays the trainer's request as an editorial card. The following split view shows the captured ChatGPT and OpenScene browser session, with privacy-cropped jump cuts that enlarge the recorded tool names, inputs, and page revisions. Conversation names, unrelated history, composer chrome, and model waiting time are excluded.
 
 The film has one external narrator, no scene-partner dialogue, no music, no click track, no generated room noise, and no visible watermark.
 
@@ -88,12 +88,12 @@ Source imagery was generated with OpenAI image generation. Motion is an editoria
 - [x] OpenScene Studio implements six real WebMCP tools and a human-controlled practice loop.
 - [x] Proposal and update contracts reject agent-supplied response copy, boards, media, and answer timing.
 - [x] Local Studio state, WebMCP, browser, accessibility, responsive, media, type, lint, format, and production-build checks pass on the candidate.
-- [x] Final deployment is reachable without the owner's session.
-- [x] Public repository contains the shipped source, assets, instructions, tests, and a visible MIT license.
+- [ ] Deploy the frozen candidate and verify unrestricted access from a clean session.
+- [ ] Push the frozen source, assets, instructions, tests, and visible MIT license to the public repository.
 - [x] Authentic native ChatGPT capture exists with privacy crop and same-page mutation evidence.
-- [x] Final 109.5-second demo render and English captions are prepared at the paths above.
+- [x] Final 100-second demo render and English captions are prepared at the paths above.
 - [x] Five release screenshots are prepared in `assets/submission/screenshots/`.
-- [x] Public YouTube upload and public English caption track.
+- [ ] Upload the frozen demo to YouTube and attach the English caption track.
 - [ ] Devpost fields contain the final live URL, repository URL, video URL, description, and images.
 - [ ] Owner review and the final Devpost Submit action.
 

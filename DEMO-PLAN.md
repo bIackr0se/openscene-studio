@@ -9,7 +9,7 @@ The station story is fictional and for at-home practice. It demonstrates one con
 ## Final film record
 
 - File: `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`
-- Duration: 109.5 seconds
+- Duration: 100 seconds
 - Video: H.264, 1440 × 810, 30 fps (16:9)
 - Audio: stereo AAC, 48 kHz, one external narrator
 - Captions: `assets/submission/studio-demo/captions.srt`, English sidecar captions
@@ -18,22 +18,20 @@ The station story is fictional and for at-home practice. It demonstrates one con
 
 ## Final sequence
 
-| Time          | Picture                                                                                                          | What the viewer should understand                                                                                                |
-| ------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| 0:00–0:08.5   | A passenger who cannot use stairs needs to practise asking for the lift in German before a trip.                 | The real-life need is clear before the product appears.                                                                          |
-| 0:08.5–0:16.2 | The existing German lesson and its platform-two context.                                                         | The lesson explains where the train leaves but omits the lift question.                                                          |
-| 0:16.2–0:23.6 | The learner's need.                                                                                              | The learner cannot use stairs and does not know what to say in German.                                                           |
-| 0:23.6–0:35.6 | Editorial request card with the exact text sent to ChatGPT.                                                      | The trainer gives ChatGPT the learner's need and asks it to add the practice. A label identifies this card as editorial context. |
-| 0:35.6–0:43.4 | A concise explanation of the difference between a normal chat and WebMCP.                                        | WebMCP lets ChatGPT act on the OpenScene project already open on the page.                                                       |
-| 0:43.4–0:51.8 | Authentic privacy-cropped ChatGPT and OpenScene capture, marked as recorded live.                                | ChatGPT reads the open project, sends the exact branch inputs, and opens the new preview on the same page.                       |
-| 0:51.8–0:58.6 | The page-owned boundary.                                                                                         | OpenScene supplies the approved words, filmed answer, answer board, and timing.                                                  |
-| 0:58.6–1:08.4 | The new practice path in the Studio editor.                                                                      | The draft connects the learner need, German line, and pause to the approved response pack.                                       |
-| 1:08.4–1:15.2 | The preview stops before the response.                                                                           | The page waits for the learner's choice before it can release the approved answer.                                               |
-| 1:15.2–1:22.7 | A clearly labeled editorial human-action frame identifies the real page choice, followed by the native response. | The learner chooses `Wo ist der Aufzug zu Gleis zwei?`; only then does the filmed answer start.                                  |
-| 1:22.7–1:30.0 | The response and `LIFT → PLATFORM 2` board.                                                                      | The learner rehearses the exact exchange in the same scene.                                                                      |
-| 1:30.0–1:36.0 | The trainer keeps the path, with revision evidence.                                                              | A person remains responsible for the authored change.                                                                            |
-| 1:36.0–1:43.1 | Code and tool list.                                                                                              | The six tools are page-owned, narrow, and visible in the implementation.                                                         |
-| 1:43.1–1:49.5 | Final links and fictional/synthetic-media disclosure.                                                            | The viewer leaves with the live site, source repository, scope, and rights context.                                              |
+| Time      | Picture                                                                         | What the viewer should understand                                                                                                                |
+| --------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0:00–0:09 | The recorded announcement, its English meaning, and the missing question.       | The train terminates, the connection leaves from platform two, and the lesson omits the lift question needed by a learner who cannot use stairs. |
+| 0:09–0:15 | The trainer's exact request to ChatGPT.                                         | The trainer asks ChatGPT to add the approved lift question, response clip, and learner preview to this open lesson.                              |
+| 0:15–0:29 | Four privacy-cropped jump cuts from the recorded ChatGPT and OpenScene session. | ChatGPT calls `inspect_project`, `propose_branch`, and `preview_branch`; OpenScene reaches revision two and pauses for the learner.              |
+| 0:29–0:37 | Ordinary chat and WebMCP compared on one frame.                                 | A separate chat can translate the question; WebMCP can change the lesson already open on the page.                                               |
+| 0:37–0:46 | The page-owned practice contract.                                               | OpenScene keeps the German question, response clip, route board, and pause time linked as one revision.                                          |
+| 0:46–0:54 | The preview paused before the response.                                         | The recorded response remains locked until the learner chooses a German line.                                                                    |
+| 0:54–1:01 | The learner selects `Wo ist der Aufzug zu Gleis zwei?`.                         | The learner performs the missing turn instead of watching another fixed explanation.                                                             |
+| 1:01–1:11 | The response clip and `LIFT → PLATFORM 2` board.                                | A persistent header shows that the learner's question unlocked the trainer-approved response.                                                    |
+| 1:11–1:19 | The completed exchange.                                                         | The German question, filmed answer, meanings, and route board remain together.                                                                   |
+| 1:19–1:26 | Keep Practice and Undo Change.                                                  | The trainer makes the final editorial decision.                                                                                                  |
+| 1:26–1:34 | Literal `document.modelContext.registerTool(...)` code and the six-tool list.   | The implementation uses six narrow page-owned WebMCP tools.                                                                                      |
+| 1:34–1:40 | Live/source links and the fictional-data disclosure.                            | The prototype is an at-home lesson with no live station data or travel guidance.                                                                 |
 
 The narration timing is recorded in `assets/submission/studio-demo/narration-timeline.json`. The English SRT follows the same cues. The request card and native capture are separate evidence surfaces, and the film labels each one.
 
@@ -41,7 +39,7 @@ The narration timing is recorded in `assets/submission/studio-demo/narration-tim
 
 The native capture is authentic page-and-ChatGPT footage with a privacy crop. Conversation names and unrelated history are excluded. A small recorded-live label identifies the native footage in the film.
 
-The capture begins with the real Studio project at source revision zero and shows the request context, project trace, exact inputs, the proposed `ask_for_lift` branch, the `step_free` response pack, the learner turn, the response after the real page choice, and the trainer's keep action. The click itself is too brief to read in the privacy crop, so the film inserts a clearly labeled editorial human-action frame that points to the exact line selected. It does not imitate native ChatGPT UI. The machine-readable proof record is `assets/submission/studio-native-webmcp-proof.json`.
+The native excerpt uses four jump cuts from the recorded browser session. They show `openscene_inspect_project`, `openscene_propose_branch`, `openscene_preview_branch`, the `ask_for_lift` input, `responsePackId: "step_free"`, the 2.04-second pause, and OpenScene at revision two. Editorial overlays enlarge those exact recorded tool facts and page results. The learner action and trainer decision are shown later on the OpenScene page, not presented as native ChatGPT controls. The machine-readable proof record is `assets/submission/studio-native-webmcp-proof.json`.
 
 The opening editorial card repeats the real task request so the audience can understand the native sequence from its first frame. A label marks it as editorial context, separate from the native recording.
 
@@ -74,6 +72,6 @@ npm run verify:studio-demo-release -- \
   --manifest assets/submission/studio-demo/release.manifest.json
 ```
 
-The final film is public at https://youtu.be/j5Htg-fsE4E with the verified English caption track and release thumbnail. The Devpost form may be prepared with the live URL, public repository, video URL, description, and five release images, but the final Submit action is held for the owner.
+The verified film and English SRT are held locally until the owner authorizes the final public upload. The existing YouTube link points to an earlier candidate and must not be submitted as the release film. The Devpost form may be prepared with the live URL, public repository, final video URL, description, and five release images, but the final Submit action remains held for the owner.
 
 The proof record and source capture are private local release evidence. The public repository includes only the redacted contract template.

@@ -218,10 +218,10 @@ function Stage({
         <div>
           <span>
             {response
-              ? 'FILMED ANSWER'
+              ? 'RECORDED STATION-EMPLOYEE ANSWER'
               : waiting
                 ? "LEARNER'S TURN"
-                : 'ORIGINAL VIDEO'}
+                : 'ORIGINAL STATION VIDEO'}
           </span>
           <strong>{formatTime(displayedTime)}</strong>
         </div>
@@ -245,7 +245,7 @@ function Stage({
           aria-label="Learner practice turn"
         >
           <span>PAUSED FOR THE LEARNER</span>
-          <h2>Choose the phrase you would say.</h2>
+          <h2>Choose the German question you would say.</h2>
           <p>{branch.learnerNeed}</p>
           <div className="studio-line-options">
             {snapshot.project.branches.map((option) => (
@@ -261,8 +261,8 @@ function Stage({
             ))}
           </div>
           <small className="studio-human-note">
-            The filmed answer starts only after the learner chooses the matching
-            German line.
+            The recorded station-employee answer starts only after the learner
+            chooses the German lift question.
           </small>
           {practiceStatus && (
             <output className="studio-human-feedback">{practiceStatus}</output>
@@ -291,7 +291,7 @@ function Stage({
             </strong>
           </div>
           <div className="studio-response-copy">
-            <span>FILMED ANSWER</span>
+            <span>RECORDED STATION-EMPLOYEE ANSWER</span>
             <strong lang="de">{branch.responseText}</strong>
             <p>{branch.responseTranslation}</p>
           </div>
@@ -313,7 +313,7 @@ function Stage({
             ? `CUE ${formatTime(source.cue.startSec)}–${formatTime(source.cue.endSec)}`
             : branch
               ? `LEARNER ${formatTime(branch.pauseAtSec)} · ANSWER ${formatTime(branch.responseAtSec)}`
-              : 'ORIGINAL VIDEO'}
+              : 'ORIGINAL STATION VIDEO'}
         </strong>
       </footer>
     </section>
@@ -340,7 +340,9 @@ function Timeline({
       <header className="studio-timeline-header">
         <div>
           <span>PRACTICE PATH MAP</span>
-          <strong>Original video → learner phrase → filmed answer</strong>
+          <strong>
+            Station announcement → learner’s German question → recorded answer
+          </strong>
         </div>
         <label htmlFor="studio-playhead">
           PLAYHEAD <output>{formatTime(playheadSec)}</output>
@@ -556,7 +558,7 @@ export default function OpenSceneStudio() {
       recordLocal(
         'local',
         'STUDIO-ONLY DEMO · NO CHATGPT CALL',
-        'Lift question added to the video · learner need + German line + trainer-approved filmed answer + pause',
+        'Lift practice added to the OpenScene lesson · access need + German question + approved recorded answer + pause time',
         result.revision,
       );
     } else {
@@ -680,7 +682,7 @@ export default function OpenSceneStudio() {
       recordLocal(
         'human',
         'PREVIEW PRACTICE PATH',
-        `${selectedBranch.title} · video paused for the learner phrase`,
+        `${selectedBranch.title} · station video paused for the learner's German question`,
         result.revision,
       );
     } else {
@@ -699,12 +701,12 @@ export default function OpenSceneStudio() {
       recordLocal(
         'human',
         'LEARNER PHRASE ACCEPTED',
-        'Learner turn completed · filmed answer started',
+        'Learner chose the German lift question · recorded station-employee answer started',
         result.revision,
       );
     } else {
       setPracticeStatus(
-        'That phrase belongs to another practice path. The video is still waiting.',
+        'That German line does not ask for the lift. The OpenScene lesson is still waiting for the German lift question.',
       );
       recordLocal(
         'human',
@@ -829,30 +831,32 @@ export default function OpenSceneStudio() {
             German practice for changing trains.
           </span>
           <h1 id="studio-agent-brief-title">
-            Asking for help in another language is hard, especially when a
-            passenger cannot use stairs, hear an announcement, or read a sign.
+            A learner cannot use the stairs. The train-transfer lesson never
+            teaches the German question for the lift.
           </h1>
           <p>
-            In this example, the German lesson says the next train leaves from
-            platform two but never teaches how to ask for the lift. Through
-            WebMCP, the trainer asks ChatGPT to add “Wo ist der Aufzug zu Gleis
-            zwei?” to this open video. OpenScene pauses when it is time to
-            speak. The learner chooses the matching German line. The
-            trainer-approved filmed answer then plays.
+            This fictional lesson shows a station employee announcing that the
+            learner’s train ends at this station. The connecting train leaves
+            from railway platform two. The lesson does not teach the German
+            question for the lift. Through WebMCP, the trainer asks ChatGPT to
+            add the German lift question and the approved recorded answer to the
+            OpenScene project already open in the browser. OpenScene pauses the
+            lesson before the answer. The learner chooses the German question,
+            then the recorded station-employee response plays.
           </p>
           <small>
-            TRAINER ASKS CHATGPT THROUGH WEBMCP → CHATGPT ADDS THE LIFT QUESTION
-            TO THIS VIDEO → LEARNER CHOOSES THE MATCHING GERMAN LINE → FILMED
-            ANSWER PLAYS
+            TRAINER GIVES CHATGPT THE ACCESS NEED → CHATGPT ADDS THE APPROVED
+            LIFT EXCHANGE THROUGH WEBMCP → OPENSCENE PAUSES FOR THE LEARNER →
+            LEARNER CHOOSES THE GERMAN QUESTION → RECORDED ANSWER PLAYS
           </small>
         </div>
         {latestWebMcpEvent ? (
           <div className="studio-sample-action" data-source="webmcp">
-            <span>WEBMCP · CHATGPT UPDATED THIS PROJECT</span>
+            <span>WEBMCP · CHATGPT UPDATED THE OPENSCENE PROJECT</span>
             <strong>
               {latestWebMcpEvent.revision === 0
-                ? 'ChatGPT inspected this project'
-                : `ChatGPT updated this project · version ${String(latestWebMcpEvent.revision).padStart(2, '0')}`}
+                ? 'ChatGPT inspected the OpenScene project'
+                : `ChatGPT updated the OpenScene project · version ${String(latestWebMcpEvent.revision).padStart(2, '0')}`}
             </strong>
           </div>
         ) : (
@@ -1015,7 +1019,9 @@ export default function OpenSceneStudio() {
                 </label>
 
                 <fieldset className="studio-approved-response">
-                  <legend>Trainer-approved filmed answer</legend>
+                  <legend>
+                    Trainer-approved recorded station-employee answer
+                  </legend>
                   <div className="studio-pack-options">
                     {snapshot.availableResponsePacks.map((pack) => (
                       <label
@@ -1045,7 +1051,7 @@ export default function OpenSceneStudio() {
                   </div>
                   <div className="studio-pack-preview">
                     <div>
-                      <span>FILMED ANSWER SCRIPT</span>
+                      <span>RECORDED STATION-EMPLOYEE ANSWER</span>
                       <strong lang="de">{approvedPack.responseText}</strong>
                       <p>{approvedPack.responseTranslation}</p>
                     </div>
@@ -1055,7 +1061,7 @@ export default function OpenSceneStudio() {
                         <dd>{approvedPack.answerBoard}</dd>
                       </div>
                       <div>
-                        <dt>Filmed answer</dt>
+                        <dt>Recorded answer</dt>
                         <dd>{STUDIO_MEDIA[approvedPack.mediaId].label}</dd>
                       </div>
                       <div>
@@ -1065,14 +1071,17 @@ export default function OpenSceneStudio() {
                     </dl>
                   </div>
                   <p className="studio-pack-boundary">
-                    ChatGPT can choose this pre-approved answer, but OpenScene
-                    keeps its wording, route board, video, and timing fixed.
+                    ChatGPT can select this trainer-approved response. OpenScene
+                    keeps the German wording, route board, recording, and pause
+                    time fixed.
                   </p>
                 </fieldset>
 
                 <div className="studio-time-fields">
                   <label className="studio-field">
-                    <span>Pause before learner turn</span>
+                    <span>
+                      Pause before learner chooses the German question
+                    </span>
                     <input
                       name="pauseAtSec"
                       type="number"
@@ -1207,12 +1216,12 @@ export default function OpenSceneStudio() {
           </span>
           <strong>
             {latestEvent?.label ??
-              'trainer describes the need → ChatGPT adds the lift question → learner chooses the German line → trainer decides'}
+              'trainer names the access need → ChatGPT adds the approved lift exchange → learner chooses the German lift question → trainer keeps or undoes the change'}
           </strong>
         </div>
         <p>
           {latestEvent?.detail ??
-            'This example adds one lift exchange. ChatGPT can choose only the trainer-approved filmed answer. OpenScene pauses for the learner’s German line and lets the trainer keep or undo the change.'}
+            'The fictional railway-station lesson adds the missing lift exchange. OpenScene pauses for the learner’s German question, plays the approved recorded answer, and leaves the final Keep or Undo decision to the trainer.'}
         </p>
         <div className="studio-slate-state">
           <span>STATE ID</span>

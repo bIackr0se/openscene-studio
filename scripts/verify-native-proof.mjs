@@ -14,7 +14,7 @@ export const EXPECTED_NATIVE_PROOF_RELEASE_ID =
 export const EXPECTED_STUDIO_PROJECT_ID = 'station-transfer-studio';
 export const EXPECTED_BRANCH_ID = 'ask_for_lift';
 export const EXPECTED_NATIVE_PROOF_REQUEST =
-  'This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.';
+  "The learner cannot use stairs. Add the trainer-approved German lift question and recorded answer to this OpenScene lesson, then preview the learner's turn.";
 export const RELEASE_PROOF_REQUEST = EXPECTED_NATIVE_PROOF_REQUEST;
 export const PRIVATE_PREVIEW_PROOF_REQUEST = EXPECTED_NATIVE_PROOF_REQUEST;
 export const INITIAL_STATE_ID = `${EXPECTED_STUDIO_PROJECT_ID}:r0:source:source`;
@@ -345,7 +345,7 @@ function validateRequestEvidence(proof, findings) {
   }
   if (
     evidence.exactText !== EXPECTED_NATIVE_PROOF_REQUEST ||
-    evidence.source !== 'editorial-card-transcribed-from-native-task' ||
+    evidence.source !== 'editorial-card-faithful-to-native-task' ||
     evidence.visibleBeforeNativeToolEvidence !== true ||
     evidence.faithfulToNativeTask !== true ||
     evidence.syntheticNativeUi !== false

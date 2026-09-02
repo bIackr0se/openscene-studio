@@ -28,8 +28,8 @@
     "testDouble": true
   },
   "requestEvidence": {
-    "source": "editorial-card-transcribed-from-native-task",
-    "exactText": "This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.",
+    "source": "editorial-card-faithful-to-native-task",
+    "exactText": "The learner cannot use stairs. Add the trainer-approved German lift question and recorded answer to this OpenScene lesson, then preview the learner's turn.",
     "visibleBeforeNativeToolEvidence": true,
     "faithfulToNativeTask": true,
     "syntheticNativeUi": false

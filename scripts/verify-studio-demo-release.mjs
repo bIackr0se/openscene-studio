@@ -16,6 +16,11 @@ import { dirname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
+import {
+  STUDIO_DEMO_DURATION_SEC,
+  STUDIO_DEMO_SCENES,
+} from './studio-demo-plan.mjs';
+
 export const STUDIO_DEMO_MANIFEST_VERSION = 2;
 export const NATIVE_PROOF_SCHEMA_VERSION = 7;
 export const STUDIO_PROJECT_ID = 'station-transfer-studio';
@@ -44,56 +49,67 @@ export const REQUIRED_STUDIO_EVIDENCE_MARKERS = [
   'human_keep_or_undo',
 ];
 
+function sceneTime(cueId, offsetSec) {
+  let startSec = 0;
+  for (const scene of STUDIO_DEMO_SCENES) {
+    if (scene.cueId === cueId) {
+      return Number((startSec + offsetSec).toFixed(2));
+    }
+    startSec += scene.durationSec;
+  }
+  throw new Error(`Unknown Studio demo cue: ${cueId}`);
+}
+
 export const EXPECTED_STUDIO_EVIDENCE_MARKERS = {
   studio_source: {
-    atSec: 8.7,
+    atSec: sceneTime('problem', 3.6),
     kind: 'editorial',
     surface: 'studio-state',
   },
   native_chatgpt_request: {
-    atSec: 23.8,
+    atSec: sceneTime('trainer_request', 3),
     kind: 'editorial',
     surface: 'request-card',
   },
   inspect_project_result: {
-    atSec: 43.8,
+    atSec: sceneTime('native_result', 4.8),
     kind: 'native',
     surface: 'native-chatgpt-capture',
   },
   propose_branch_result: {
-    atSec: 47.5,
+    atSec: sceneTime('native_result', 8.5),
     kind: 'native',
     surface: 'native-chatgpt-capture',
   },
   six_tool_implementation_proof: {
-    atSec: 96.3,
+    atSec: sceneTime('implementation', 3.5),
     kind: 'editorial',
     surface: 'code-proof',
   },
   preview_waiting_for_learner: {
-    atSec: 59,
+    atSec: sceneTime('learner_pause', 4.4),
     kind: 'editorial',
     surface: 'studio-state',
   },
   learner_turn_visible: {
-    atSec: 64.8,
+    atSec: sceneTime('learner_pause', 7.4),
     kind: 'editorial',
     surface: 'studio-state',
   },
   learner_line_selection: {
-    atSec: 72.5,
+    atSec: sceneTime('learner_choice', 5.2),
     kind: 'editorial',
     surface: 'human-page-action',
   },
   response_and_answer_board: {
-    atSec: 82.7,
+    atSec: sceneTime('recorded_response', 7.2),
     kind: 'editorial',
     surface: 'studio-state',
   },
   human_keep_or_undo: {
-    atSec: 95.2,
-    kind: 'native',
-    surface: 'native-chatgpt-capture',
+    atSec: sceneTime('trainer_decision', 4.2),
+    kind: 'editorial',
+    surface: 'studio-state',
   },
 };
 
@@ -111,12 +127,12 @@ export const REQUIRED_PROOF_VIDEO_MILESTONES = [
 ];
 
 export const EXPECTED_REQUEST =
-  'This learner cannot use stairs and does not know how to ask for the lift in German. Add that practice to the video, then preview it.';
+  "The learner cannot use stairs. Add the trainer-approved German lift question and recorded answer to this OpenScene lesson, then preview the learner's turn.";
 export const EXPECTED_LEARNER_LINE = 'Wo ist der Aufzug zu Gleis zwei?';
 export const EXPECTED_ANSWER_BOARD = 'LIFT → PLATFORM 2';
 
-export const MIN_DEMO_DURATION_SEC = 95;
-export const MAX_DEMO_DURATION_SEC = 110;
+export const MIN_DEMO_DURATION_SEC = STUDIO_DEMO_DURATION_SEC - 0.5;
+export const MAX_DEMO_DURATION_SEC = STUDIO_DEMO_DURATION_SEC + 0.5;
 
 const EXPECTED_WIDTH = 1440;
 const EXPECTED_HEIGHT = 810;
@@ -911,8 +927,7 @@ function validateNativeTrace(proof, findings) {
   } else {
     if (
       requestEvidence.exactText !== EXPECTED_REQUEST ||
-      requestEvidence.source !==
-        'editorial-card-transcribed-from-native-task' ||
+      requestEvidence.source !== 'editorial-card-faithful-to-native-task' ||
       requestEvidence.visibleBeforeNativeToolEvidence !== true ||
       requestEvidence.faithfulToNativeTask !== true ||
       requestEvidence.syntheticNativeUi !== false
