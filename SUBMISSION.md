@@ -60,7 +60,7 @@ The proposal input contains a learner need, German line, translation, `responseP
 
 The page keeps the learner's line selection and the trainer's `Keep path` action outside the agent contract. This leaves the consequential practice and approval decisions with people.
 
-The release candidate passes 101 deterministic tests, 45 browser checks in development, and the same 45 checks against the production server. Those runs cover the schemas, stale-write rejection, learner gate, trainer approval, media, responsive layouts, automated accessibility checks, and the literal browser registration path. `npm run verify:local-release` reproduces the full local gate.
+The release candidate passes 105 deterministic tests, 45 browser checks in development, and the same 45 checks against the production server. Those runs cover the schemas, stale-write rejection, learner gate, trainer approval, media, responsive layouts, automated accessibility checks, and the literal browser registration path. `npm run verify:local-release` reproduces the full local gate.
 
 ## Demo and evidence
 
