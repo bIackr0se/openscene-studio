@@ -18,7 +18,7 @@ OpenScene keeps the added practice in the same video project. The trainer descri
 
 ## Why WebMCP
 
-Ask ChatGPT in a separate chat, and it can suggest the German sentence. The video stays unchanged because that chat cannot see its cue, approved answer, pause point, or project revision. Through WebMCP, OpenScene exposes those controls as narrow page-owned tools.
+An ordinary chat can suggest the German sentence, but it cannot edit the OpenScene lesson already open in the browser because it cannot access that lesson's cue, trainer-approved response clip, pause point, or revision. Through WebMCP, OpenScene exposes those controls as narrow page-owned tools.
 
 WebMCP gives ChatGPT a narrow interface to the OpenScene project already open on the page. The page owns the response words, translation, answer board, filmed media, and timing. ChatGPT selects from those page-approved materials and returns the resulting page version and state. A write with an old page version fails without changing the project.
 
