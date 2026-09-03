@@ -40,7 +40,7 @@ The repository license covers the project code. The media provenance and output-
 bash scripts/build-rehearsal-media.sh
 ```
 
-The build emits silent H.264 video at 1440 by 810, 30 fps, and `yuv420p`, then runs the strict media verifier. Run its adversarial self-test separately:
+The motion build emits silent H.264 video at 1440 by 810, 30 fps, and `yuv420p`, then runs the strict media verifier. The demonstrated lift path displays the approved German answer and its English meaning after the learner selects the lift question.
 
 ```bash
 npm run test:media-verifier

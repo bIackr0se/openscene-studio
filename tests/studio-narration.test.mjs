@@ -19,15 +19,18 @@ import {
   validateNarrationTimeline,
   validateStudioNarration,
 } from '../scripts/validate-studio-narration.mjs';
-import { STUDIO_DEMO_SCENES } from '../scripts/studio-demo-plan.mjs';
+import {
+  STUDIO_DEMO_SCENES,
+  STUDIO_RESPONSE_BOARD_REVEAL_SEC,
+} from '../scripts/studio-demo-plan.mjs';
 
 const REPO_ROOT = process.cwd();
 
 const TEXT_BY_ID = {
   problem:
-    'The trainer opens a German train-transfer lesson for a learner who cannot use stairs.',
+    'OpenScene Studio is a video-lesson editor for language trainers. A recorded German lesson helps a learner who cannot use stairs practise asking for the lift.',
   trainer_request:
-    'The trainer asks ChatGPT to add the approved lift question to the OpenScene lesson.',
+    "The trainer asks ChatGPT to add the approved lift response clip to the OpenScene project and preview the learner's turn.",
   native_result:
     'ChatGPT calls an OpenScene tool and receives a structured result.',
   why_webmcp:
@@ -131,6 +134,23 @@ test('ambiguous compressed copy is rejected', () => {
   );
 });
 
+test('the opening cannot skip the product, trainer, lesson, learner, and access need', () => {
+  const timeline = validTimeline();
+  timeline.cues[0].text =
+    'The lesson says this train ends here. The lift question is missing.';
+  const findings = validateNarrationTimeline(timeline);
+
+  assert.ok(
+    findings.some((finding) => /introduce what the product is/.test(finding)),
+  );
+  assert.ok(
+    findings.some((finding) => /introduce the primary user/.test(finding)),
+  );
+  assert.ok(
+    findings.some((finding) => /introduce the access need/.test(finding)),
+  );
+});
+
 test('a missing semantic field is rejected', () => {
   const timeline = validTimeline();
   delete timeline.cues[4].visibleEvidence;
@@ -152,7 +172,7 @@ test('cue sequence drift is rejected', () => {
 test('caption text and timing drift are rejected', () => {
   const timeline = validTimeline();
   const captions = renderSrt(timeline)
-    .replace('The trainer opens', 'The trainer watches')
+    .replace('OpenScene Studio is', 'OpenScene Studio was')
     .replace('00:00:35,500', '00:00:36,000');
   const findings = validateStudioNarration({ timeline, captions });
   assert.ok(
@@ -166,6 +186,20 @@ test('caption text and timing drift are rejected', () => {
     ),
   );
   assert.ok(findings.some((finding) => /generated SRT/.test(finding)));
+});
+
+test('captions may add an English translation for a non-English spoken cue', () => {
+  const timeline = validTimeline();
+  const response = timeline.cues.find((cue) => cue.id === 'recorded_response');
+  response.text = 'Der Aufzug ist links.';
+  response.captionText = 'Der Aufzug ist links.\n[The lift is on the left.]';
+  const captions = renderSrt(timeline);
+
+  assert.match(
+    captions,
+    /Der Aufzug ist links\.\n\[The lift is on the left\.\]/,
+  );
+  assert.deepEqual(validateStudioNarration({ timeline, captions }), []);
 });
 
 test('overlong, fragmentary, and passive narration is rejected', () => {
@@ -202,7 +236,7 @@ test('every required narrative field is part of the fixture contract', () => {
 test('cue-leading pronouns are allowed only with an explicit antecedent', () => {
   const timeline = validTimeline();
   timeline.cues[0].text =
-    'This learner practises a German railway-station lesson in OpenScene.';
+    'This OpenScene Studio video-lesson editor helps language trainers prepare a recorded German lesson. The learner cannot use stairs and needs to practise asking for the lift.';
   timeline.cues[0].antecedent = 'the learner introduced in the scene brief';
   assert.deepEqual(validateNarrationTimeline(timeline), []);
 
@@ -224,13 +258,47 @@ test('every spoken cue stays inside its matching visible scene', () => {
   assert.deepEqual(validateCueSceneAlignment(timeline), []);
 });
 
+test('the narrated response starts only after its response board appears', () => {
+  const timelinePath = join(
+    REPO_ROOT,
+    'assets/submission/studio-demo/narration-timeline.json',
+  );
+  const timeline = JSON.parse(readFileSync(timelinePath, 'utf8'));
+  const responseIndex = STUDIO_DEMO_SCENES.findIndex(
+    (scene) => scene.cueId === 'recorded_response',
+  );
+  const responseStartSec = STUDIO_DEMO_SCENES.slice(0, responseIndex).reduce(
+    (sum, scene) => sum + scene.durationSec,
+    0,
+  );
+  const responseScene = STUDIO_DEMO_SCENES[responseIndex];
+  const responseCue = timeline.cues.find(
+    (cue) => cue.id === 'recorded_response',
+  );
+
+  assert.ok(responseCue, 'recorded response cue must exist');
+  assert.ok(
+    responseCue.startSec >= responseStartSec + STUDIO_RESPONSE_BOARD_REVEAL_SEC,
+    'narrated response begins before its matching answer board is visible',
+  );
+  assert.ok(
+    responseCue.startSec <=
+      responseStartSec + STUDIO_RESPONSE_BOARD_REVEAL_SEC + 0.25,
+    'narrated response is visibly detached from its matching answer board',
+  );
+  assert.ok(
+    responseCue.endSec <= responseStartSec + responseScene.durationSec,
+    'narrated response continues after the response scene ends',
+  );
+});
+
 test('a cue that crosses into the next visual scene is rejected', () => {
   const timelinePath = join(
     REPO_ROOT,
     'assets/submission/studio-demo/narration-timeline.json',
   );
   const timeline = JSON.parse(readFileSync(timelinePath, 'utf8'));
-  timeline.cues[0].endSec = 9.01;
+  timeline.cues[0].endSec = STUDIO_DEMO_SCENES[0].durationSec + 0.01;
   assert.ok(
     validateCueSceneAlignment(timeline).some((finding) =>
       /cue problem .* must stay inside its visible scene/.test(finding),
@@ -281,7 +349,7 @@ import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 const args = process.argv.slice(2);
 const value = (name) => args[args.indexOf(name) + 1];
-appendFileSync(process.env.FAKE_TTS_LOG, value('--text') + '\\n');
+appendFileSync(process.env.FAKE_TTS_LOG, [value('--text'), value('--voice'), value('--lang_code'), value('--speed')].join('|') + '\\n');
 execFileSync('ffmpeg', ['-y', '-v', 'error', '-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=mono', '-t', '0.1', '-c:a', 'pcm_s16le', join(value('--output_path'), value('--file_prefix') + '.wav')]);
 `,
     );
@@ -321,15 +389,26 @@ execFileSync('ffmpeg', ['-y', '-v', 'error', '-f', 'lavfi', '-i', 'anullsrc=r=48
     render();
     render();
     assert.deepEqual(readFileSync(logPath, 'utf8').trim().split('\n'), [
-      'First text.',
+      'First text.|fake-voice|a|1',
     ]);
 
     timeline.cues[0].text = 'Changed text.';
     writeFileSync(timelinePath, JSON.stringify(timeline));
     render();
     assert.deepEqual(readFileSync(logPath, 'utf8').trim().split('\n'), [
-      'First text.',
-      'Changed text.',
+      'First text.|fake-voice|a|1',
+      'Changed text.|fake-voice|a|1',
+    ]);
+
+    timeline.cues[0].voice = 'scene-voice';
+    timeline.cues[0].language = 'de_DE';
+    timeline.cues[0].speed = 0.86;
+    writeFileSync(timelinePath, JSON.stringify(timeline));
+    render();
+    assert.deepEqual(readFileSync(logPath, 'utf8').trim().split('\n'), [
+      'First text.|fake-voice|a|1',
+      'Changed text.|fake-voice|a|1',
+      'Changed text.|scene-voice|de_DE|0.86',
     ]);
   } finally {
     rmSync(root, { recursive: true, force: true });

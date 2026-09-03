@@ -22,13 +22,45 @@ export const STUDIO_SCREENSHOT_FIT = Object.freeze({
   width: 1200,
   height: 900,
 });
+export const STUDIO_EDITORIAL_SAFE_AREA = Object.freeze({
+  left: 55,
+  top: 55,
+  right: 1385,
+  bottom: 845,
+});
+export const STUDIO_TRAINER_REQUEST =
+  "The learner cannot use stairs. Add the approved lift question and response clip to this OpenScene project, then preview the learner's turn.";
+export const STUDIO_WEBMCP_EXPLANATION = Object.freeze({
+  chatHeading: Object.freeze(['ChatGPT answers in', 'a separate chat.']),
+  chatConsequence: Object.freeze([
+    'The trainer receives the German question.',
+    'The OpenScene lesson stays unchanged.',
+  ]),
+  webmcpHeading: Object.freeze([
+    'ChatGPT edits this open',
+    'OpenScene lesson.',
+  ]),
+  webmcpConsequence: Object.freeze([
+    'GERMAN QUESTION',
+    'LEARNER PAUSE',
+    'APPROVED FILMED ANSWER',
+    'VERSION 02 · UNDOABLE',
+  ]),
+});
 export const LEARNER_TARGET_BOUNDS = Object.freeze({
   left: 770,
-  top: 548,
+  top: 465,
   width: 600,
-  height: 96,
+  height: 90,
 });
-export const LEARNER_CURSOR_HOTSPOT = Object.freeze({ x: 1240, y: 596 });
+export const LEARNER_CURSOR_HOTSPOT = Object.freeze({ x: 1214, y: 535 });
+export const TRAINER_KEEP_BOUNDS = Object.freeze({
+  left: 70,
+  top: 548,
+  width: 590,
+  height: 112,
+});
+export const TRAINER_CURSOR_HOTSPOT = Object.freeze({ x: 590, y: 642 });
 
 await mkdir(output, { recursive: true });
 
@@ -72,9 +104,12 @@ function frame(body, background = paper) {
   );
 }
 
+function cursorPathAt(x, y) {
+  return `M ${x} ${y} L ${x} ${y - 50} L ${x + 14} ${y - 37} L ${x + 31} ${y - 63} L ${x + 42} ${y - 56} L ${x + 27} ${y - 31} L ${x + 48} ${y - 31} Z`;
+}
+
 function learnerCursorPath() {
-  const { x, y } = LEARNER_CURSOR_HOTSPOT;
-  return `M ${x} ${y} L ${x} ${y - 70} L ${x + 19} ${y - 51} L ${x + 41} ${y - 90} L ${x + 57} ${y - 81} L ${x + 35} ${y - 44} L ${x + 62} ${y - 44} Z`;
+  return cursorPathAt(LEARNER_CURSOR_HOTSPOT.x, LEARNER_CURSOR_HOTSPOT.y);
 }
 
 async function writeSvg(name, body, background) {
@@ -109,19 +144,6 @@ async function fitScreenshot(name, source) {
     .composite([
       { input: foreground, left: STUDIO_SCREENSHOT_FIT.left, top: 0 },
     ])
-    .png()
-    .toFile(resolve(output, name));
-}
-
-async function focusScreenshot(name, source, crop, overlay) {
-  const focused = await sharp(resolve(root, source))
-    .extract(crop)
-    .resize(W, H, { fit: 'cover', position: 'centre' })
-    .png()
-    .toBuffer();
-
-  await sharp(focused)
-    .composite([{ input: frame(overlay, 'transparent') }])
     .png()
     .toFile(resolve(output, name));
 }
@@ -181,85 +203,55 @@ await fitScreenshot(
   'assets/submission/screenshots/01-studio-problem.jpg',
 );
 
-await focusScreenshot(
+await posterCard(
   '01-source-focus.png',
-  'assets/submission/screenshots/01-studio-problem.jpg',
-  { left: 0, top: 274, width: 928, height: 604 },
+  'public/rehearsal-prompt-v1.jpg',
   `<defs><linearGradient id="sourceShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07100f" stop-opacity="0.92"/><stop offset="0.22" stop-color="#07100f" stop-opacity="0"/></linearGradient></defs>
-   <rect width="1440" height="230" fill="url(#sourceShade)"/>
-   ${label('Recorded station announcement already in the lesson', 66, 70, signal)}
-   ${lines(['TRAIN TERMINATES HERE TODAY'], 66, 124, 30, 36, { fill: paper, weight: 720 })}
-   ${lines(['CONNECTING TRAIN → RAILWAY PLATFORM TWO'], 1374, 124, 30, 36, { fill: paper, weight: 720, anchor: 'end' })}
-   <rect x="590" y="575" width="790" height="276" rx="4" fill="none" stroke="${signal}" stroke-width="5"/>
-   <rect x="590" y="529" width="420" height="46" rx="2" fill="${signal}"/>
-   ${lines(['EXACT ANNOUNCEMENT + ENGLISH MEANING'], 610, 560, 17, 22, { fill: ink, weight: 760, letterSpacing: 1 })}`,
+   <rect width="1440" height="192" fill="url(#sourceShade)"/>
+   ${label('OpenScene Studio · trainer view', 70, 94, signal)}
+   ${lines(['Recorded German train-transfer lesson'], 70, 144, 32, 40, { fill: paper, weight: 700 })}
+   <line x1="70" y1="170" x2="1370" y2="170" stroke="${paper}" stroke-opacity="0.28"/>
+   <rect x="70" y="500" width="650" height="280" fill="#07100f" fill-opacity="0.94" stroke="${signal}" stroke-width="2"/>
+   ${label('Original announcement · German', 108, 558, signal)}
+   ${lines(['Dieser Zug endet heute hier.', 'Ihr Anschluss fährt von Gleis zwei.'], 108, 624, 34, 44, { fill: paper, weight: 720 })}
+   ${lines(['This train terminates here today.', 'Your connection leaves from railway platform two.'], 108, 728, 19, 27, { fill: paper, weight: 500 })}`,
 );
 
 await posterCard(
   '02-missing-question.png',
   'public/rehearsal-prompt-v1.jpg',
-  `<rect width="1440" height="900" fill="#07100f" opacity="0.58"/>
-  <rect x="664" y="68" width="710" height="764" rx="3" fill="${paper}"/>
-  ${label('What the recorded announcement says', 720, 132, '#2f725c')}
-  ${lines(['This train terminates here today.'], 720, 194, 35, 44, { weight: 720 })}
-  ${lines(['The connecting train leaves from', 'railway platform two.'], 720, 286, 35, 44, { weight: 720 })}
-  <line x1="720" y1="414" x2="1318" y2="414" stroke="#adb7b2"/>
-  ${label('What the lesson never teaches', 720, 462, '#a4382f')}
-  ${lines(['How to ask the station employee', 'for the lift in German.'], 720, 526, 38, 48, { weight: 720 })}
-  <rect x="720" y="664" width="598" height="106" rx="3" fill="#fff4c4" stroke="#b89417" stroke-width="2"/>
-  ${label('Learner’s access need', 748, 706, '#725b08')}
-  ${lines(['CANNOT USE STAIRS'], 748, 752, 26, 32, { weight: 780, letterSpacing: 1 })}
-  <rect x="64" y="716" width="512" height="94" rx="47" fill="${signal}"/>
-  ${lines(['MISSING LIFT QUESTION = INCOMPLETE EXCHANGE'], 320, 774, 19, 28, { weight: 760, anchor: 'middle', letterSpacing: 0.5 })}`,
+  `<defs><linearGradient id="missingShade" x1="0" x2="1"><stop offset="0" stop-color="#07100f" stop-opacity="0.16"/><stop offset="0.42" stop-color="#07100f" stop-opacity="0.34"/><stop offset="0.58" stop-color="#07100f" stop-opacity="0.92"/><stop offset="1" stop-color="#07100f" stop-opacity="0.98"/></linearGradient></defs>
+  <rect width="1440" height="900" fill="url(#missingShade)"/>
+  ${label('The missing learner turn', 780, 112, signal)}
+  ${lines(['The announcement is already', 'recorded. The learner’s lift', 'question is not.'], 780, 182, 34, 43, { fill: paper, weight: 700 })}
+  <line x1="780" y1="322" x2="1355" y2="322" stroke="${paper}" stroke-opacity="0.3"/>
+  ${label('Learner need', 780, 386, route)}
+  ${lines(['Cannot use stairs'], 780, 432, 30, 38, { fill: paper, weight: 650 })}
+  ${label('Missing German turn', 780, 516, route)}
+  ${lines(['Wo ist der Aufzug zu Gleis zwei?'], 780, 570, 31, 40, { fill: paper, weight: 720 })}
+  ${lines(['Where is the lift to railway platform two?'], 780, 620, 20, 28, { fill: muted, weight: 500 })}`,
 );
 
 await writeSvg(
   '03-request.png',
-  `<rect x="0" y="0" width="24" height="900" fill="${signal}"/>
-   ${label('The trainer’s exact request to ChatGPT', 102, 104, '#2f725c')}
-   ${lines(['OPENSCENE LESSON ALREADY OPEN IN THIS BROWSER'], 102, 162, 20, 26, { fill: '#59655f', weight: 720, letterSpacing: 1.2 })}
-   ${lines(['“The learner cannot use stairs.'], 102, 246, 48, 62, { weight: 680 })}
-   ${lines(['Add the trainer-approved German lift question and recorded answer', 'to this OpenScene lesson, then preview the learner’s turn.”'], 102, 382, 39, 54, { weight: 680 })}
-   <line x1="102" y1="620" x2="1338" y2="620" stroke="#b9bdb8"/>
-   ${lines(['ACCESS NEED + APPROVED LESSON CHANGE + PREVIEW'], 102, 686, 23, 30, { fill: '#2f725c', weight: 720, letterSpacing: 1 })}
-   <rect x="1010" y="694" width="328" height="86" rx="43" fill="${ink}"/>
-   ${lines(['SEND TO CHATGPT'], 1174, 747, 22, 28, { fill: paper, weight: 720, anchor: 'middle', letterSpacing: 1.5 })}`,
+  `${label('Trainer request', 70, 104, '#2f725c')}
+   ${lines(['OpenScene lesson already open'], 70, 154, 22, 28, { fill: '#59655f', weight: 700, letterSpacing: 0.8 })}
+   ${lines(['The learner cannot use stairs.', 'Add the approved lift question and response clip', 'to this OpenScene project, then preview', "the learner's turn."], 70, 246, 48, 64, { weight: 680 })}
+   <line x1="70" y1="574" x2="1370" y2="574" stroke="#b9bdb8"/>`,
   paper,
 );
 
 await writeSvg(
-  '04-ordinary-chat.png',
-  `${label('What an ordinary chat can do', 74, 88, signal)}
-   ${lines(['Suggest the German question.'], 74, 166, 52, 62, { fill: paper, weight: 700 })}
-   <rect x="74" y="260" width="575" height="360" rx="4" fill="#111b19" stroke="#4b5b56" stroke-width="2"/>
-   ${label('ChatGPT answer', 114, 316, route)}
-   ${lines(['Wo ist der Aufzug', 'zu Gleis zwei?'], 114, 398, 43, 52, { fill: paper, weight: 700 })}
-   ${lines(['Where is the lift to', 'railway platform two?'], 114, 524, 27, 38, { fill: muted, weight: 520 })}
-   <rect x="714" y="260" width="652" height="360" rx="4" fill="#111b19" stroke="#4b5b56" stroke-width="2"/>
-   ${label('OpenScene lesson remains unchanged', 754, 316, '#d7937a')}
-   ${lines(['NO LEARNER PAUSE'], 754, 402, 32, 42, { fill: paper, weight: 720 })}
-   ${lines(['NO APPROVED RECORDED ANSWER'], 754, 460, 32, 42, { fill: paper, weight: 720 })}
-   ${lines(['NO NEW PROJECT REVISION'], 754, 518, 32, 42, { fill: paper, weight: 720 })}
-   <rect x="74" y="690" width="1292" height="94" rx="3" fill="${paper}"/>
-   ${lines(['THE WORDS EXIST. THE VIDEO LESSON HAS NOT CHANGED.'], 720, 749, 25, 30, { fill: ink, weight: 760, anchor: 'middle', letterSpacing: 1 })}`,
-  ink,
-);
-
-await writeSvg(
   '04-webmcp.png',
-  `${label('Why WebMCP', 74, 86, signal)}
-   ${lines(['The difference is the open lesson.'], 74, 160, 48, 58, { fill: paper, weight: 700 })}
-   <rect x="74" y="268" width="584" height="286" rx="4" fill="#111b19" stroke="#4b5b56" stroke-width="2"/>
-   ${label('Ordinary chat', 112, 322, '#d7937a')}
-   ${lines(['Translates the German question'], 112, 386, 29, 38, { fill: paper, weight: 620 })}
-   ${lines(['OPENSCENE LESSON UNCHANGED'], 112, 492, 21, 28, { fill: '#d7937a', weight: 760, letterSpacing: 1 })}
-   <rect x="782" y="268" width="584" height="286" rx="4" fill="#111b19" stroke="${route}" stroke-width="3"/>
-   ${label('ChatGPT + WebMCP', 820, 322, route)}
-   ${lines(['Edits the OpenScene lesson', 'already open in the browser'], 820, 386, 29, 40, { fill: paper, weight: 620 })}
-   ${lines(['PAGE REVISION CHANGES'], 820, 492, 21, 28, { fill: route, weight: 760, letterSpacing: 1 })}
-   <rect x="74" y="614" width="1292" height="120" rx="3" fill="${signal}"/>
-   ${label('OpenScene keeps control', 112, 658, '#5f4a00')}
-   ${lines(['APPROVED WORDING · RECORDED ANSWER · PAUSE TIME · UNDO'], 112, 706, 23, 30, { fill: ink, weight: 780, letterSpacing: 0.8 })}`,
+  `<line x1="720" y1="70" x2="720" y2="520" stroke="#41504c" stroke-width="2"/>
+   ${label('ChatGPT', 70, 104, signal)}
+   ${lines(STUDIO_WEBMCP_EXPLANATION.chatHeading, 70, 182, 42, 50, { fill: paper, weight: 700 })}
+   ${lines(STUDIO_WEBMCP_EXPLANATION.chatConsequence, 70, 322, 24, 34, { fill: muted, weight: 540 })}
+   ${label('ChatGPT + WebMCP', 780, 104, route)}
+   ${lines(STUDIO_WEBMCP_EXPLANATION.webmcpHeading, 780, 182, 42, 50, { fill: paper, weight: 700 })}
+   ${lines(STUDIO_WEBMCP_EXPLANATION.webmcpConsequence, 780, 326, 23, 48, { fill: route, weight: 740, letterSpacing: 0.8 })}
+   <line x1="70" y1="540" x2="1370" y2="540" stroke="#41504c" stroke-width="2"/>
+   ${lines(['The trainer previews the updated lesson before keeping it.'], 70, 602, 28, 36, { fill: paper, weight: 620 })}`,
   ink,
 );
 
@@ -269,19 +261,18 @@ await fitScreenshot(
 );
 await writeSvg(
   '07-page-boundary.png',
-  `${label('OpenScene supplies the approved content', 70, 82, signal)}
-   ${lines(['ChatGPT selected: ASK FOR THE LIFT'], 70, 154, 40, 48, { fill: paper, weight: 680 })}
-   <rect x="70" y="232" width="1300" height="500" rx="4" fill="#111b19" stroke="#41504c" stroke-width="2"/>
-   ${label('German question', 112, 292, route)}
-   ${lines(['Wo ist der Aufzug', 'zu Gleis zwei?'], 112, 356, 36, 46, { fill: paper, weight: 700 })}
-   ${label('Recorded station-employee answer', 562, 292, route)}
-   ${lines(['Der Aufzug ist links.', 'Fahren Sie weiter zu Gleis zwei.'], 562, 356, 31, 44, { fill: paper, weight: 680 })}
-   ${label('Lift-route board', 112, 522, route)}
-   ${lines(['LIFT → RAILWAY PLATFORM TWO'], 112, 578, 28, 36, { fill: paper, weight: 720 })}
-   ${label('Exact pause time', 1010, 522, route)}
-   ${lines(['00:02.04'], 1010, 590, 46, 52, { fill: signal, weight: 760 })}
-   <rect x="70" y="770" width="1300" height="72" rx="3" fill="${signal}"/>
-   ${lines(['OPENSCENE KEEPS THESE WORDS, RECORDINGS, AND TIMING FIXED.'], 720, 816, 21, 28, { fill: ink, weight: 760, anchor: 'middle', letterSpacing: 0.9 })}`,
+  `${label('Reusable trainer content', 70, 104, signal)}
+   ${lines(['Record one approved answer clip for each situation.'], 70, 168, 36, 44, { fill: paper, weight: 700 })}
+   <line x1="70" y1="236" x2="1370" y2="236" stroke="#41504c"/>
+   ${label('German learner line', 70, 302, route)}
+   ${lines(['Wo ist der Aufzug zu Gleis zwei?'], 70, 360, 38, 46, { fill: paper, weight: 720 })}
+   ${label('Approved response clip', 70, 478, route)}
+   ${lines(['step_free · recorded answer'], 70, 532, 30, 38, { fill: paper, weight: 650 })}
+   ${label('Pause before learner turn', 1010, 478, route)}
+   ${lines(['2.04 s'], 1010, 532, 42, 48, { fill: signal, weight: 760 })}
+   <line x1="70" y1="568" x2="1370" y2="568" stroke="#41504c"/>
+   ${lines(['OPENSCENE REUSES IT WHEN THE SAME SITUATION RECURS'], 70, 620, 27, 34, { fill: signal, weight: 760, letterSpacing: 1.3 })}
+   ${lines(['A NEW SITUATION NEEDS A NEW RECORDING'], 70, 660, 27, 34, { fill: route, weight: 760, letterSpacing: 1.3 })}`,
   ink,
 );
 
@@ -304,121 +295,123 @@ await panelScreenshot(
 await posterCard(
   '07-waiting.png',
   'public/rehearsal-prompt-v1.jpg',
-  `<defs><linearGradient id="waitShade" x1="0" x2="1"><stop offset="0" stop-color="#07100f" stop-opacity="0.2"/><stop offset="0.5" stop-color="#07100f" stop-opacity="0.66"/><stop offset="0.63" stop-color="#07100f" stop-opacity="0.96"/><stop offset="1" stop-color="#07100f" stop-opacity="0.99"/></linearGradient></defs>
+  `<defs><linearGradient id="waitShade" x1="0" x2="1"><stop offset="0" stop-color="#07100f" stop-opacity="0.16"/><stop offset="0.48" stop-color="#07100f" stop-opacity="0.42"/><stop offset="0.62" stop-color="#07100f" stop-opacity="0.92"/><stop offset="1" stop-color="#07100f" stop-opacity="0.99"/></linearGradient></defs>
    <rect width="1440" height="900" fill="url(#waitShade)"/>
-   <rect x="0" y="0" width="1440" height="76" fill="#07100f" opacity="0.98"/>
-   ${lines(['VIDEO PAUSED BEFORE THE RECORDED ANSWER'], 28, 48, 18, 22, { fill: signal, weight: 760, letterSpacing: 1.2 })}
-   ${lines(['WAITING FOR THE LEARNER’S GERMAN LIFT QUESTION'], 1412, 48, 18, 22, { fill: route, weight: 760, anchor: 'end', letterSpacing: 1.2 })}
-   <rect x="720" y="98" width="650" height="690" rx="4" fill="#07100f" opacity="0.96" stroke="#53615d" stroke-width="2"/>
-   ${label('Paused for the learner', 770, 148, signal)}
-   ${lines(['Choose the German question', 'you would say.'], 770, 214, 38, 46, { fill: paper, weight: 700 })}
-   ${lines(['The recorded answer cannot start until the learner chooses.'], 770, 320, 20, 27, { fill: muted, weight: 500 })}
+   ${label('OpenScene · preview paused', 70, 94, signal)}
+   ${lines(['RECORDED RESPONSE LOCKED'], 1370, 94, 20, 24, { fill: route, weight: 760, anchor: 'end', letterSpacing: 1.3 })}
+   <rect x="720" y="90" width="650" height="570" rx="3" fill="#07100f" opacity="0.94" stroke="#53615d" stroke-width="2"/>
+   ${label('Learner turn', 770, 140, signal)}
+   ${lines(['Choose the German line'], 770, 190, 36, 44, { fill: paper, weight: 700 })}
+   ${lines(['The response stays locked until you choose.'], 770, 230, 19, 25, { fill: muted, weight: 500 })}
+   <line x1="770" y1="260" x2="1320" y2="260" stroke="#53615d"/>
+   ${lines(['Welchen Zug soll ich jetzt nehmen?'], 790, 304, 20, 24, { fill: paper, weight: 620 })}
+   ${lines(['Which train should I take now?'], 790, 330, 16, 20, { fill: muted, weight: 500 })}
    <line x1="770" y1="354" x2="1320" y2="354" stroke="#53615d"/>
-   ${lines(['Welchen Zug soll ich jetzt nehmen?'], 790, 394, 20, 24, { fill: paper, weight: 620 })}
-   ${lines(['Which train should I take now?'], 790, 422, 16, 20, { fill: muted, weight: 500 })}
-   <line x1="770" y1="454" x2="1320" y2="454" stroke="#53615d"/>
-   ${lines(['Können Sie das bitte wiederholen?'], 790, 494, 20, 24, { fill: paper, weight: 620 })}
-   ${lines(['Could you repeat that, please?'], 790, 522, 16, 20, { fill: muted, weight: 500 })}
-   <rect x="${LEARNER_TARGET_BOUNDS.left}" y="${LEARNER_TARGET_BOUNDS.top}" width="${LEARNER_TARGET_BOUNDS.width}" height="${LEARNER_TARGET_BOUNDS.height}" rx="8" fill="#111b19" stroke="#53615d" stroke-width="2"/>
-   ${lines(['Wo ist der Aufzug zu Gleis zwei?'], 794, 584, 21, 26, { fill: paper, weight: 680 })}
-   ${lines(['Where is the lift to railway platform two?'], 794, 616, 16, 20, { fill: muted, weight: 500 })}
-   ${lines(['RECORDED ANSWER REMAINS LOCKED'], 770, 712, 17, 22, { fill: signal, weight: 760, letterSpacing: 1.2 })}
-   <line x1="74" y1="838" x2="1366" y2="838" stroke="#53615d" stroke-width="2"/>
-   <circle cx="712" cy="838" r="8" fill="${signal}"/>
-   ${label('Original lesson', 74, 826, muted)}
-   ${label('Learner turn', 744, 826, signal)}
-   ${label('Recorded answer', 1178, 826, muted)}`,
+   ${lines(['Können Sie das bitte wiederholen?'], 790, 398, 20, 24, { fill: paper, weight: 620 })}
+   ${lines(['Could you repeat that, please?'], 790, 424, 16, 20, { fill: muted, weight: 500 })}
+   <rect x="${LEARNER_TARGET_BOUNDS.left}" y="${LEARNER_TARGET_BOUNDS.top}" width="${LEARNER_TARGET_BOUNDS.width}" height="${LEARNER_TARGET_BOUNDS.height}" rx="6" fill="#111b19" stroke="#53615d" stroke-width="2"/>
+   ${lines(['Wo ist der Aufzug zu Gleis zwei?'], 794, 500, 21, 26, { fill: paper, weight: 680 })}
+   ${lines(['Where is the lift to railway platform two?'], 794, 530, 16, 20, { fill: muted, weight: 500 })}
+   ${lines(['RECORDED RESPONSE REMAINS LOCKED'], 770, 615, 17, 22, { fill: signal, weight: 760, letterSpacing: 1.2 })}`,
 );
 await annotateWaiting(
   '08-click-target.png',
-  `<rect x="0" y="0" width="720" height="76" fill="#07100f"/>
-   ${lines(['LEARNER ACTION · SELECT THE GERMAN LIFT QUESTION'], 28, 48, 17, 20, { fill: signal, weight: 700, letterSpacing: 1.5 })}
-   <rect x="${LEARNER_TARGET_BOUNDS.left}" y="${LEARNER_TARGET_BOUNDS.top}" width="${LEARNER_TARGET_BOUNDS.width}" height="${LEARNER_TARGET_BOUNDS.height}" rx="8" fill="none" stroke="${signal}" stroke-width="5"/>
-   <circle cx="${LEARNER_CURSOR_HOTSPOT.x}" cy="${LEARNER_CURSOR_HOTSPOT.y}" r="27" fill="none" stroke="${signal}" stroke-width="4" opacity="0.92"/>
-   <circle cx="${LEARNER_CURSOR_HOTSPOT.x}" cy="${LEARNER_CURSOR_HOTSPOT.y}" r="7" fill="${signal}"/>
-   <path d="${learnerCursorPath()}" fill="${paper}" stroke="#07100f" stroke-width="4" stroke-linejoin="round"/>
+  `<rect x="55" y="55" width="1330" height="62" fill="#07100f"/>
+   ${lines(['LEARNER ACTION · SELECT THE LIFT QUESTION'], 70, 94, 20, 24, { fill: signal, weight: 760, letterSpacing: 1.3 })}
+   ${lines(['RECORDED RESPONSE LOCKED'], 1370, 94, 20, 24, { fill: route, weight: 760, anchor: 'end', letterSpacing: 1.3 })}
+   <rect x="${LEARNER_TARGET_BOUNDS.left}" y="${LEARNER_TARGET_BOUNDS.top}" width="${LEARNER_TARGET_BOUNDS.width}" height="${LEARNER_TARGET_BOUNDS.height}" rx="6" fill="none" stroke="${signal}" stroke-width="4"/>
+   <path d="${learnerCursorPath()}" fill="${paper}" stroke="#07100f" stroke-width="3" stroke-linejoin="round"/>
    `,
 );
 await annotateWaiting(
   '09-click-selected.png',
-  `<rect x="0" y="0" width="720" height="76" fill="#07100f"/>
-   ${lines(['LEARNER ACTION · GERMAN LIFT QUESTION SELECTED'], 28, 48, 17, 20, { fill: route, weight: 700, letterSpacing: 1.5 })}
-   <rect x="${LEARNER_TARGET_BOUNDS.left}" y="${LEARNER_TARGET_BOUNDS.top}" width="${LEARNER_TARGET_BOUNDS.width}" height="${LEARNER_TARGET_BOUNDS.height}" rx="8" fill="#07100f" opacity="0.94" stroke="${signal}" stroke-width="5"/>
-   <rect x="${LEARNER_TARGET_BOUNDS.left}" y="${LEARNER_TARGET_BOUNDS.top}" width="10" height="${LEARNER_TARGET_BOUNDS.height}" rx="4" fill="${signal}"/>
-   ${lines(['Wo ist der Aufzug zu Gleis zwei?'], 794, 584, 21, 26, { fill: paper, weight: 680 })}
-   ${lines(['Where is the lift to railway platform two?'], 794, 616, 16, 20, { fill: muted, weight: 520 })}
-   <circle cx="1328" cy="596" r="18" fill="${route}" stroke="${paper}" stroke-width="3"/>
-   ${lines(['✓'], 1328, 603, 19, 19, { fill: ink, weight: 800, anchor: 'middle' })}
-   <path d="${learnerCursorPath()}" fill="${paper}" stroke="#07100f" stroke-width="4" stroke-linejoin="round"/>
-   <rect x="770" y="674" width="600" height="82" rx="8" fill="#07100f" stroke="${route}" stroke-width="3"/>
-   ${lines(['LEARNER SELECTED THE GERMAN LIFT QUESTION'], 800, 724, 17, 22, { fill: route, weight: 760, letterSpacing: 1.1 })}`,
+  `<rect x="55" y="55" width="1330" height="62" fill="#07100f"/>
+   ${lines(['LEARNER ACTION · LINE SELECTED'], 70, 94, 20, 24, { fill: route, weight: 760, letterSpacing: 1.3 })}
+   ${lines(['RECORDED RESPONSE READY'], 1370, 94, 20, 24, { fill: signal, weight: 760, anchor: 'end', letterSpacing: 1.3 })}
+   <rect x="${LEARNER_TARGET_BOUNDS.left}" y="${LEARNER_TARGET_BOUNDS.top}" width="${LEARNER_TARGET_BOUNDS.width}" height="${LEARNER_TARGET_BOUNDS.height}" rx="6" fill="#07100f" opacity="0.94" stroke="${signal}" stroke-width="4"/>
+   <rect x="${LEARNER_TARGET_BOUNDS.left}" y="${LEARNER_TARGET_BOUNDS.top}" width="8" height="${LEARNER_TARGET_BOUNDS.height}" rx="3" fill="${signal}"/>
+   ${lines(['Wo ist der Aufzug zu Gleis zwei?'], 794, 500, 21, 26, { fill: paper, weight: 680 })}
+   ${lines(['Where is the lift to railway platform two?'], 794, 530, 16, 20, { fill: muted, weight: 520 })}
+   <path d="M 1308 512 l 10 10 l 20 -24" fill="none" stroke="${route}" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+   <rect x="770" y="570" width="600" height="62" fill="#07100f"/>
+   <line x1="770" y1="576" x2="1370" y2="576" stroke="${route}" stroke-width="2"/>
+   ${lines(['MATCH CONFIRMED'], 770, 614, 17, 22, { fill: route, weight: 760, letterSpacing: 1.1 })}`,
 );
 await posterCard(
   '10-outcome.png',
   'public/rehearsal-step-free-v1.jpg',
-  `<defs><linearGradient id="outcomeShade" x1="0" x2="1"><stop offset="0" stop-color="#07100f" stop-opacity="0.12"/><stop offset="0.47" stop-color="#07100f" stop-opacity="0.48"/><stop offset="0.64" stop-color="#07100f" stop-opacity="0.94"/><stop offset="1" stop-color="#07100f" stop-opacity="0.98"/></linearGradient></defs>
+  `<defs><linearGradient id="outcomeShade" x1="0" x2="1"><stop offset="0" stop-color="#07100f" stop-opacity="0.08"/><stop offset="0.44" stop-color="#07100f" stop-opacity="0.38"/><stop offset="0.62" stop-color="#07100f" stop-opacity="0.94"/><stop offset="1" stop-color="#07100f" stop-opacity="0.99"/></linearGradient></defs>
    <rect width="1440" height="900" fill="url(#outcomeShade)"/>
-   <rect x="738" y="68" width="636" height="764" rx="4" fill="#07100f" opacity="0.96"/>
-   ${label('At-home learner outcome', 786, 126, signal)}
-   ${lines(['COMPLETE EXCHANGE', 'REHEARSED'], 786, 198, 48, 58, { fill: paper, weight: 740 })}
-   ${label('Learner asks in German', 786, 342, route)}
-   ${lines(['Wo ist der Aufzug zu Gleis zwei?'], 786, 390, 25, 32, { fill: paper, weight: 650 })}
-   ${lines(['Where is the lift to railway platform two?'], 786, 430, 19, 26, { fill: muted, weight: 500 })}
-   <line x1="786" y1="474" x2="1326" y2="474" stroke="#53615d"/>
-   ${label('Recorded station employee answers', 786, 526, route)}
-   ${lines(['Der Aufzug ist links.', 'Fahren Sie weiter zu Gleis zwei.'], 786, 576, 25, 35, { fill: paper, weight: 650 })}
-   ${lines(['The lift is on the left.', 'Continue to railway platform two.'], 786, 668, 19, 27, { fill: muted, weight: 500 })}
-   <rect x="786" y="754" width="540" height="54" rx="27" fill="${signal}"/>
-   ${lines(['LIFT → RAILWAY PLATFORM TWO'], 1056, 790, 18, 22, { fill: ink, weight: 780, anchor: 'middle', letterSpacing: 1 })}`,
+   ${label('Recorded response plays', 780, 112, signal)}
+   ${lines(['The learner’s German line', 'unlocks the approved clip.'], 780, 188, 42, 54, { fill: paper, weight: 700 })}
+   <line x1="780" y1="324" x2="1360" y2="324" stroke="#53615d"/>
+   ${lines(['Wo ist der Aufzug zu Gleis zwei?'], 780, 386, 28, 36, { fill: paper, weight: 650 })}
+   ${lines(['Der Aufzug ist links.', 'Fahren Sie weiter zu Gleis zwei.'], 780, 472, 28, 36, { fill: paper, weight: 650 })}
+   ${label('Answer board', 780, 630, route)}
+   ${lines(['LIFT → PLATFORM 2'], 780, 678, 26, 32, { fill: paper, weight: 760, letterSpacing: 0.8 })}`,
 );
 await posterCard(
   '11-trainer-decision.png',
   'public/rehearsal-step-free-v1.jpg',
-  `<rect width="1440" height="900" fill="#07100f" opacity="0.84"/>
-   ${label('Trainer review · Page revision 04', 74, 102, signal)}
-   ${lines(['Keep the new lift practice,', 'or undo the change.'], 74, 194, 58, 70, { fill: paper, weight: 720 })}
-   ${lines(['The German question, recorded answer, route board, and pause time', 'remain linked as one revision.'], 78, 408, 25, 36, { fill: paper, weight: 500 })}
-   <rect x="74" y="566" width="546" height="118" rx="4" fill="${signal}"/>
-   ${lines(['KEEP PRACTICE'], 347, 638, 26, 32, { fill: ink, weight: 780, anchor: 'middle', letterSpacing: 1.1 })}
-   <rect x="654" y="566" width="546" height="118" rx="4" fill="#111b19" stroke="${paper}" stroke-width="2"/>
-   ${lines(['UNDO CHANGE'], 927, 638, 26, 32, { fill: paper, weight: 780, anchor: 'middle', letterSpacing: 1.1 })}
-   <rect x="74" y="754" width="1126" height="58" rx="29" fill="${paper}"/>
-   ${lines(['THE TRAINER MAKES THE FINAL DECISION'], 637, 792, 19, 24, { fill: ink, weight: 780, anchor: 'middle', letterSpacing: 1 })}`,
+  `<defs><linearGradient id="decisionShade" x1="0" x2="1"><stop offset="0" stop-color="#07100f" stop-opacity="0.72"/><stop offset="0.48" stop-color="#07100f" stop-opacity="0.78"/><stop offset="0.72" stop-color="#07100f" stop-opacity="0.9"/><stop offset="1" stop-color="#07100f" stop-opacity="0.96"/></linearGradient></defs>
+   <rect width="1440" height="900" fill="url(#decisionShade)"/>
+   ${label('Trainer decision', 70, 104, signal)}
+   ${lines(['Keep the lift practice', 'or undo the revision.'], 70, 194, 58, 70, { fill: paper, weight: 720 })}
+   ${lines(['The trainer owns the final cut.'], 70, 390, 28, 36, { fill: paper, weight: 500 })}
+   <line x1="70" y1="492" x2="1370" y2="492" stroke="#53615d"/>
+   <rect x="70" y="548" width="590" height="112" fill="${signal}"/>
+   ${lines(['KEEP PRACTICE'], 365, 616, 26, 32, { fill: ink, weight: 780, anchor: 'middle', letterSpacing: 1.1 })}
+   <rect x="780" y="548" width="590" height="112" fill="#111b19" stroke="${paper}" stroke-width="2"/>
+   ${lines(['UNDO CHANGE'], 1075, 616, 26, 32, { fill: paper, weight: 780, anchor: 'middle', letterSpacing: 1.1 })}
+   <path d="${cursorPathAt(TRAINER_CURSOR_HOTSPOT.x, TRAINER_CURSOR_HOTSPOT.y)}" fill="${paper}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
+);
+await posterCard(
+  '11-trainer-kept.png',
+  'public/rehearsal-step-free-v1.jpg',
+  `<defs><linearGradient id="keptShade" x1="0" x2="1"><stop offset="0" stop-color="#07100f" stop-opacity="0.72"/><stop offset="0.48" stop-color="#07100f" stop-opacity="0.78"/><stop offset="0.72" stop-color="#07100f" stop-opacity="0.9"/><stop offset="1" stop-color="#07100f" stop-opacity="0.96"/></linearGradient></defs>
+   <rect width="1440" height="900" fill="url(#keptShade)"/>
+   ${label('Trainer decision', 70, 104, route)}
+   ${lines(['Lift practice kept.'], 70, 214, 62, 72, { fill: paper, weight: 720 })}
+   ${lines(['The approved change remains in this lesson.'], 70, 340, 28, 36, { fill: paper, weight: 500 })}
+   <line x1="70" y1="492" x2="1370" y2="492" stroke="#53615d"/>
+   <rect x="70" y="548" width="590" height="112" fill="${route}"/>
+   ${lines(['KEPT · REVISION 02'], 345, 616, 26, 32, { fill: ink, weight: 780, anchor: 'middle', letterSpacing: 1.1 })}
+   <circle cx="614" cy="604" r="24" fill="${paper}"/>
+   <path d="M603 604 l8 8 l15 -19" fill="none" stroke="${ink}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+   <rect x="780" y="548" width="590" height="112" fill="#111b19" stroke="#53615d" stroke-width="2"/>
+   ${lines(['UNDO CHANGE'], 1075, 616, 26, 32, { fill: muted, weight: 720, anchor: 'middle', letterSpacing: 1.1 })}`,
 );
 
 await writeSvg(
   '12-code.png',
-  `${label('Page-owned implementation', 70, 88, signal)}
-   ${lines(['OpenScene exposes six narrow tools.', 'The learner and trainer keep the final decisions.'], 70, 160, 43, 54, { fill: paper, weight: 670 })}
-   <rect x="70" y="310" width="760" height="474" rx="4" fill="#111b19" stroke="#41504c"/>
-   ${lines(['document.modelContext.registerTool({', '  name: "openscene_propose_branch",', '  inputSchema: { branch, expectedRevision },', '  execute: async (input) => proposeBranch(input)', '});'], 112, 380, 27, 58, { fill: paper, weight: 470, family: "'SFMono-Regular', Menlo, Consolas, monospace" })}
-   <rect x="876" y="310" width="494" height="474" rx="4" fill="${paper}"/>
-   ${label('Implementation proof', 916, 368, '#2f725c')}
-   ${lines(['OpenScene exposes six tools', 'to ChatGPT through WebMCP.'], 916, 432, 27, 42, { weight: 600 })}
-   ${lines(['inspect_project', 'configure_project', 'propose_branch', 'update_branch', 'preview_branch', 'undo_last_edit'], 916, 558, 25, 39, { weight: 600, family: "'SFMono-Regular', Menlo, Consolas, monospace" })}`,
+  `${label('How OpenScene connects to ChatGPT', 70, 104, signal)}
+   ${lines(['WebMCP gives ChatGPT a narrow way', 'into the same page.'], 70, 214, 48, 58, { fill: paper, weight: 700 })}
+   <line x1="70" y1="360" x2="1370" y2="360" stroke="#41504c"/>
+   ${lines(['document.modelContext.registerTool'], 70, 442, 38, 48, { fill: route, weight: 560, family: "'SFMono-Regular', Menlo, Consolas, monospace" })}
+   ${lines(['Six specific editing actions · every edit includes the current page version'], 70, 520, 26, 34, { fill: paper, weight: 520 })}`,
   ink,
 );
 
 await posterCard(
   '13-end.png',
   'public/rehearsal-step-free-v1.jpg',
-  `<defs><linearGradient id="endShade" x1="0" x2="1"><stop offset="0" stop-color="#07100f" stop-opacity="0.98"/><stop offset="0.66" stop-color="#07100f" stop-opacity="0.82"/><stop offset="1" stop-color="#07100f" stop-opacity="0.18"/></linearGradient></defs>
+  `<defs><linearGradient id="endShade" x1="0" x2="1"><stop offset="0" stop-color="#07100f" stop-opacity="0.9"/><stop offset="0.62" stop-color="#07100f" stop-opacity="0.82"/><stop offset="1" stop-color="#07100f" stop-opacity="0.26"/></linearGradient></defs>
    <rect width="1440" height="900" fill="url(#endShade)"/>
-   ${label('OpenScene Studio', 74, 92, signal)}
-   ${lines(['Add the lift question', 'the lesson never taught.'], 74, 194, 64, 76, { fill: paper, weight: 720 })}
-   ${lines(['The learner practises the new German question.', 'The trainer keeps or undoes the change.'], 78, 412, 29, 42, { fill: paper, weight: 480 })}
-   <rect x="74" y="574" width="862" height="2" fill="#53615d"/>
-   ${label('Live', 74, 636, route)}
-   ${lines(['openscene-webmcp.jijou-leo40.chatgpt.site'], 74, 682, 27, 34, { fill: paper, weight: 600 })}
-   ${label('Source', 74, 748, route)}
-   ${lines(['github.com/bIackr0se/openscene-studio'], 74, 794, 27, 34, { fill: paper, weight: 600 })}
-   ${lines(['Fictional lesson for practice at home · no live station data · no live travel guidance'], 74, 862, 19, 24, { fill: muted, weight: 470 })}`,
+   ${label('OpenScene Studio', 70, 104, signal)}
+   ${lines(['She leaves with one German phrase', 'rehearsed before travel.'], 70, 206, 56, 68, { fill: paper, weight: 720 })}
+   ${lines(['Fictional training scene · silent synthetic scene partner'], 70, 404, 28, 36, { fill: paper, weight: 500 })}
+   <line x1="70" y1="520" x2="940" y2="520" stroke="#53615d"/>
+   ${label('Live prototype', 70, 590, route)}
+   ${lines(['openscene-webmcp.jijou-leo40.chatgpt.site'], 70, 632, 24, 32, { fill: paper, weight: 600 })}
+   ${label('Source', 70, 704, route)}
+   ${lines(['github.com/bIackr0se/openscene-studio'], 70, 746, 24, 32, { fill: paper, weight: 600 })}
+   ${lines(['Fictional at-home lesson · no live station data · no live travel guidance'], 70, 816, 18, 24, { fill: muted, weight: 470 })}`,
 );
 
 await writeSvg(
   'response-board.png',
   `<rect x="804" y="282" width="530" height="302" rx="4" fill="#07100f" opacity="0.96" stroke="${signal}" stroke-width="3"/>
-   ${label('Recorded station-employee answer', 846, 336, signal)}
+   ${label('Approved response · on-screen answer', 846, 336, signal)}
    ${lines(['LIFT → PLATFORM 2'], 846, 414, 46, 52, { fill: paper, weight: 740 })}
    ${lines(['Der Aufzug ist links.'], 846, 476, 28, 34, { fill: route, weight: 650 })}
    ${lines(['The lift is on the left.', 'Continue to railway platform two.'], 846, 520, 23, 30, { fill: paper, weight: 520 })}
@@ -426,11 +419,11 @@ await writeSvg(
   'transparent',
 );
 
+await writeSvg('response-release.png', '', 'transparent');
+
 await writeSvg(
-  'response-release.png',
-  `<rect x="0" y="0" width="1440" height="82" fill="#07100f" opacity="0.97"/>
-   ${lines(['LEARNER SELECTED THE GERMAN LIFT QUESTION'], 48, 52, 18, 22, { fill: route, weight: 760, letterSpacing: 0.9 })}
-   ${lines(['RECORDED RESPONSE UNLOCKED'], 1012, 52, 18, 22, { fill: signal, weight: 760, letterSpacing: 0.9 })}`,
+  'native-clean-top.png',
+  '<rect x="0" y="75" width="720" height="40" fill="#07100f"/><rect x="0" y="245" width="720" height="655" fill="#07100f"/><rect x="732" y="75" width="468" height="18" fill="#f2efe7"/>',
   'transparent',
 );
 
@@ -447,8 +440,8 @@ function nativeStepOverlay({
   return writeSvg(
     name,
     `<rect x="0" y="0" width="1440" height="82" fill="#07100f"/>
-     ${lines(['CHATGPT · RECORDED BROWSER SESSION'], 48, 57, 18, 22, { fill: signal, weight: 760, letterSpacing: 1.1 })}
-     ${lines([`OPENSCENE · ${revision}`], 774, 57, 18, 22, { fill: route, weight: 760, letterSpacing: 1.1 })}
+     ${lines(['CHATGPT · RECORDED BROWSER SESSION'], 48, 73, 18, 22, { fill: signal, weight: 760, letterSpacing: 1.1 })}
+     ${lines([`OPENSCENE · ${revision}`], 774, 73, 18, 22, { fill: route, weight: 760, letterSpacing: 1.1 })}
      <rect x="0" y="82" width="720" height="728" fill="#07100f"/>
      ${label(step, 48, 122, signal)}
      ${lines(toolLines, 48, 164, 22, 31, { fill: paper, weight: 650, family: "'SFMono-Regular', Menlo, Consolas, monospace" })}
@@ -514,20 +507,18 @@ await nativeStepOverlay({
 await writeSvg(
   'native-step-4.png',
   `<rect x="0" y="0" width="1440" height="82" fill="#07100f"/>
-   ${lines(['CHATGPT · EXACT INPUT EXCERPT'], 48, 57, 18, 22, { fill: signal, weight: 760, letterSpacing: 1.1 })}
-   ${lines(['OPENSCENE · PAGE REVISION 02'], 774, 57, 18, 22, { fill: route, weight: 760, letterSpacing: 1.1 })}
+   ${lines(['RECORDED CHATGPT RUN · WEBMCP CALL 3 OF 3'], 48, 73, 18, 22, { fill: signal, weight: 760, letterSpacing: 1.1 })}
+   ${lines(['OPENSCENE · PAGE REVISION 02'], 774, 73, 18, 22, { fill: route, weight: 760, letterSpacing: 1.1 })}
    <rect x="0" y="82" width="720" height="728" fill="#07100f"/>
-   ${label('Input returned by ChatGPT', 48, 132, signal)}
-   ${lines(['branch.id        "ask_for_lift"', 'learnerLine      "Wo ist der Aufzug zu Gleis zwei?"', 'responsePackId   "step_free"', 'pauseAtSec       2.04', 'expectedRevision 0'], 48, 206, 21, 68, { fill: paper, weight: 540, family: "'SFMono-Regular', Menlo, Consolas, monospace" })}
+   ${label('openscene_preview_branch', 48, 132, signal)}
+   ${lines(['branchId         "ask_for_lift"', 'expectedRevision 1'], 48, 206, 24, 72, { fill: paper, weight: 560, family: "'SFMono-Regular', Menlo, Consolas, monospace" })}
    <rect x="48" y="548" width="618" height="122" rx="3" fill="#111b19" stroke="${route}" stroke-width="2"/>
-   ${label('Visible result', 76, 592, route)}
-   ${lines(['REVISION 02 · PAUSED FOR THE LEARNER'], 76, 640, 22, 28, { fill: paper, weight: 720, letterSpacing: 0.6 })}
-   <rect x="746" y="82" width="674" height="146" rx="3" fill="${paper}"/>
+   ${label('Structured result', 76, 592, route)}
+   ${lines(['REVISION 02 · WAITING FOR LEARNER'], 76, 640, 22, 28, { fill: paper, weight: 720, letterSpacing: 0.6 })}
+   <rect x="746" y="82" width="674" height="286" rx="3" fill="${paper}"/>
    ${label('OpenScene visible state', 774, 128, '#2f725c')}
    ${lines(['REVISION 02 · PAUSED FOR THE LEARNER'], 774, 170, 21, 26, { fill: ink, weight: 620 })}
-   <rect x="0" y="810" width="1440" height="90" fill="#07100f" opacity="0.98"/>
-   <circle cx="56" cy="844" r="6" fill="${route}"/>
-   ${lines(['RECORDED LIVE · openscene_inspect_project → openscene_propose_branch → openscene_preview_branch'], 78, 851, 16, 22, { fill: paper, weight: 700, letterSpacing: 0.3 })}`,
+   ${lines(['The page now waits before the filmed answer.'], 774, 220, 18, 24, { fill: ink, weight: 560 })}`,
   'transparent',
 );
 

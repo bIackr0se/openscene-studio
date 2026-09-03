@@ -9,29 +9,29 @@ The station story is fictional and for at-home practice. It demonstrates one con
 ## Final film record
 
 - File: `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`
-- Duration: 100 seconds
+- Duration: 119 seconds
 - Video: H.264, 1440 × 810, 30 fps (16:9)
-- Audio: stereo AAC, 48 kHz, one external narrator
+- Audio: stereo AAC, 48 kHz, one English narrator
 - Captions: `assets/submission/studio-demo/captions.srt`, English sidecar captions
-- Scene partner: silent authored response footage, no lip-synced dialogue
+- Scene partner: authored response footage with no lip-sync or perception
 - Sound: no music, click track, generated room noise, or static
 
 ## Final sequence
 
-| Time      | Picture                                                                         | What the viewer should understand                                                                                                                |
-| --------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 0:00–0:09 | The recorded announcement, its English meaning, and the missing question.       | The train terminates, the connection leaves from platform two, and the lesson omits the lift question needed by a learner who cannot use stairs. |
-| 0:09–0:15 | The trainer's exact request to ChatGPT.                                         | The trainer asks ChatGPT to add the approved lift question, response clip, and learner preview to this open lesson.                              |
-| 0:15–0:29 | Four privacy-cropped jump cuts from the recorded ChatGPT and OpenScene session. | ChatGPT calls `inspect_project`, `propose_branch`, and `preview_branch`; OpenScene reaches revision two and pauses for the learner.              |
-| 0:29–0:37 | Ordinary chat and WebMCP compared on one frame.                                 | A separate chat can translate the question; WebMCP can change the lesson already open on the page.                                               |
-| 0:37–0:46 | The page-owned practice contract.                                               | OpenScene keeps the German question, response clip, route board, and pause time linked as one revision.                                          |
-| 0:46–0:54 | The preview paused before the response.                                         | The recorded response remains locked until the learner chooses a German line.                                                                    |
-| 0:54–1:01 | The learner selects `Wo ist der Aufzug zu Gleis zwei?`.                         | The learner performs the missing turn instead of watching another fixed explanation.                                                             |
-| 1:01–1:11 | The response clip and `LIFT → PLATFORM 2` board.                                | A persistent header shows that the learner's question unlocked the trainer-approved response.                                                    |
-| 1:11–1:19 | The completed exchange.                                                         | The German question, filmed answer, meanings, and route board remain together.                                                                   |
-| 1:19–1:26 | Keep Practice and Undo Change.                                                  | The trainer makes the final editorial decision.                                                                                                  |
-| 1:26–1:34 | Literal `document.modelContext.registerTool(...)` code and the six-tool list.   | The implementation uses six narrow page-owned WebMCP tools.                                                                                      |
-| 1:34–1:40 | Live/source links and the fictional-data disclosure.                            | The prototype is an at-home lesson with no live station data or travel guidance.                                                                 |
+| Time      | Picture                                                                        | What the viewer should understand                                                                                                 |
+| --------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| 0:00–0:09 | The product, recorded lesson, learner, access need, and missing lift question. | A language trainer is editing a German lesson that omits one exchange needed by a learner who cannot use stairs.                  |
+| 0:09–0:15 | The trainer's exact request to ChatGPT.                                        | The request names the approved lift response and asks ChatGPT to add it to this OpenScene project.                                |
+| 0:15–0:33 | Privacy-cropped views from the recorded ChatGPT and OpenScene session.         | The real agent result, exact preview call, page revision, and learner pause appear beside the same project.                       |
+| 0:33–0:45 | Ordinary chat and WebMCP compared.                                             | Chat can explain the sentence; WebMCP can place the sentence, pause, and approved answer inside the open lesson.                  |
+| 0:45–0:57 | The page-owned response pack.                                                  | One approved answer clip can be reused when the same situation occurs in another lesson; a new situation still needs new content. |
+| 0:57–1:08 | The updated lesson paused before the response.                                 | The answer remains locked while the learner chooses among three German questions.                                                 |
+| 1:08–1:16 | The learner selects `Wo ist der Aufzug zu Gleis zwei?`.                        | The learner performs the missing turn before the page releases the answer.                                                        |
+| 1:16–1:25 | The response clip, visible German answer, and `LIFT → PLATFORM 2` board.       | The approved response starts only after the learner chooses the lift question.                                                    |
+| 1:25–1:35 | The completed exchange.                                                        | The train-change announcement, German lift question, and answer remain in one lesson.                                             |
+| 1:35–1:44 | Keep Practice and Undo Change.                                                 | The trainer makes the final editorial decision.                                                                                   |
+| 1:44–1:51 | Literal `document.modelContext.registerTool(...)` code.                        | The implementation uses six narrow page-owned WebMCP tools.                                                                       |
+| 1:51–1:59 | Live/source links and the fictional-data disclosure.                           | The prototype is an at-home lesson with no live station data or travel guidance.                                                  |
 
 The narration timing is recorded in `assets/submission/studio-demo/narration-timeline.json`. The English SRT follows the same cues. The request card and native capture are separate evidence surfaces, and the film labels each one.
 
@@ -57,7 +57,7 @@ The opening editorial card repeats the real task request so the audience can und
 
 ## Voice and sound
 
-Use one clear external narrator. The scene partner remains silent. Do not imply that the character hears, sees, or answers the learner. The final track has clean speech and deliberate space between ideas. The free local Superwhisper model is used only for intelligibility and caption-timing checks; no paid voice-to-text mode or account setting is required.
+Use one clear English narrator. The synthetic scene partner does not speak, lip-sync, hear, see, or perceive the learner. The final track has clean speech and deliberate space between ideas. The free local Superwhisper model is used only for intelligibility and caption-timing checks; no paid voice-to-text mode or account setting is required.
 
 ## Release gates
 
@@ -72,6 +72,6 @@ npm run verify:studio-demo-release -- \
   --manifest assets/submission/studio-demo/release.manifest.json
 ```
 
-The verified film is public at https://youtu.be/v5wYFyt5SgM with its English caption track attached. The live app and public source are linked in the video description. The final Devpost Submit action remains held for the owner.
+The verified film is public at https://youtu.be/KL9hbK2zbCU with its English caption track attached. The live app and public source are linked in the video description.
 
 The proof record and source capture are private local release evidence. The public repository includes only the redacted contract template.

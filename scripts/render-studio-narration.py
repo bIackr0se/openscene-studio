@@ -44,10 +44,10 @@ def srt_timestamp(seconds: float) -> str:
 
 def segment_fingerprint(timeline: dict, cue: dict) -> str:
     payload = {
-        "model": timeline["model"],
-        "voice": timeline["voice"],
-        "language": timeline["language"],
-        "speed": timeline["speed"],
+        "model": cue.get("model", timeline["model"]),
+        "voice": cue.get("voice", timeline["voice"]),
+        "language": cue.get("language", timeline["language"]),
+        "speed": cue.get("speed", timeline["speed"]),
         "cueId": cue["id"],
         "text": cue["text"],
     }
@@ -108,13 +108,13 @@ def main() -> int:
                 [
                     args.tts_command,
                     "--model",
-                    timeline["model"],
+                    cue.get("model", timeline["model"]),
                     "--voice",
-                    timeline["voice"],
+                    cue.get("voice", timeline["voice"]),
                     "--lang_code",
-                    timeline["language"],
+                    cue.get("language", timeline["language"]),
                     "--speed",
-                    str(timeline["speed"]),
+                    str(cue.get("speed", timeline["speed"])),
                     "--text",
                     cue["text"],
                     "--output_path",
@@ -203,7 +203,7 @@ def main() -> int:
                 [
                     str(index),
                     f"{srt_timestamp(float(cue['startSec']))} --> {srt_timestamp(float(cue['endSec']))}",
-                    cue["text"],
+                    cue.get("captionText", cue["text"]),
                 ]
             )
         )
