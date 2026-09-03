@@ -91,6 +91,19 @@ const AMBIGUOUS_LEADING_PRONOUN = /^(?:this|that|it)\b/i;
 const PASSIVE_SENTENCE_PATTERN =
   /\b(?:is|are|was|were|be|been|being)\s+(?:[a-z]+(?:ed|en)|shown|given|read|made|added|selected|presented|played|recorded|approved)\b/i;
 
+const REQUIRED_OPENING_CONTEXT = Object.freeze([
+  { pattern: /\bOpenScene Studio\b/i, label: 'the product name' },
+  {
+    pattern: /\bvideo[- ]lesson editor\b/i,
+    label: 'what the product is',
+  },
+  { pattern: /\blanguage trainers?\b/i, label: 'the primary user' },
+  { pattern: /\brecorded German lesson\b/i, label: 'the lesson being edited' },
+  { pattern: /\blearner\b/i, label: 'the learner' },
+  { pattern: /\bcannot use stairs\b/i, label: 'the access need' },
+  { pattern: /\blift\b/i, label: 'the missing practice goal' },
+]);
+
 function fieldText(value) {
   if (typeof value === 'string') return value.trim();
   if (Array.isArray(value)) {
@@ -252,7 +265,7 @@ export function renderSrt(timeline) {
         return [
           String(index + 1),
           `${millisecondsToTimestamp(startMs)} --> ${millisecondsToTimestamp(endMs)}`,
-          String(cue.text ?? ''),
+          String(cue.captionText ?? cue.text ?? ''),
         ].join('\n');
       })
       .join('\n\n') + (cues.length ? '\n' : '')
@@ -384,6 +397,42 @@ export function validateNarrationTimeline(timeline) {
     validateAmbiguousCopy(cue, index, findings);
   }
 
+  const openingText = fieldText(cues[0]?.text);
+  for (const { pattern, label } of REQUIRED_OPENING_CONTEXT) {
+    if (!pattern.test(openingText)) {
+      findings.push(`cue problem must introduce ${label} before later details`);
+    }
+  }
+
+  const requestText = fieldText(
+    cues.find((cue) => cue?.id === 'trainer_request')?.text,
+  );
+  for (const { pattern, label } of [
+    {
+      pattern: /\bapproved lift response clip\b/i,
+      label: 'the existing approved media',
+    },
+    { pattern: /\bChatGPT\b/i, label: 'ChatGPT as the requested agent' },
+    {
+      pattern: /\bOpenScene(?: project)?\b/i,
+      label: 'the concrete OpenScene target',
+    },
+  ]) {
+    if (!pattern.test(requestText)) {
+      findings.push(`cue trainer_request must name ${label}`);
+    }
+  }
+  const requestCue = cues.find((cue) => cue?.id === 'trainer_request');
+  const requestPreviewEvidence = [
+    fieldText(requestCue?.text),
+    fieldText(requestCue?.visibleEvidence),
+  ].join(' ');
+  if (!/\bpreview\b/i.test(requestPreviewEvidence)) {
+    findings.push(
+      'cue trainer_request must show or name the requested learner preview',
+    );
+  }
+
   const searchableText = cues.flatMap((cue) => stringValues(cue)).join('\n');
   for (const { term, pattern } of CANONICAL_DOCUMENT_TERMS) {
     if (!pattern.test(searchableText)) {
@@ -511,7 +560,7 @@ export function validateCaptionParity(timeline, captions) {
         `caption ${index + 1} timing must exactly match cue ${cue.id ?? index + 1}`,
       );
     }
-    if (caption.text !== cue.text) {
+    if (caption.text !== (cue.captionText ?? cue.text)) {
       findings.push(
         `caption ${index + 1} text must exactly match cue ${cue.id ?? index + 1}`,
       );

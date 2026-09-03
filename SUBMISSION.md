@@ -1,6 +1,6 @@
 # OpenScene Studio submission draft
 
-The public release package is verified. The final Devpost submission is intentionally held for owner confirmation.
+The public release package is verified. The owner authorized the final Devpost submission on September 3, 2026.
 
 Hard deadline: September 3, 2026 at 1:00 p.m. PT. Devpost displays September 3 at 10:00 p.m. GMT+2.
 
@@ -8,7 +8,7 @@ Hard deadline: September 3, 2026 at 1:00 p.m. PT. Devpost displays September 3 a
 
 - Live URL: https://openscene-webmcp.jijou-leo40.chatgpt.site/
 - Public repository: https://github.com/bIackr0se/openscene-studio
-- Public YouTube demo: https://youtu.be/v5wYFyt5SgM
+- Public YouTube demo: https://youtu.be/KL9hbK2zbCU
 - Canonical local demo file: `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`
 
 ## Project name
@@ -64,11 +64,11 @@ The release suite covers schemas, stale-write rejection, the learner gate, train
 
 ## Demo and evidence
 
-The final demo is `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`, a 100-second H.264/AAC film with a separate English caption file at `assets/submission/studio-demo/captions.srt`. The first nine seconds show the recorded announcement, its meaning, the learner's access need, and the question the lesson omitted. The next sequence shows the trainer's request, three actual WebMCP calls, the exact branch input, OpenScene at revision two, the learner's German choice, the unlocked response clip, and the trainer's Keep or Undo decision.
+The final demo is `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`, a 119-second H.264/AAC film with a separate English caption file at `assets/submission/studio-demo/captions.srt`. The first nine seconds show the recorded announcement, its meaning, the learner's access need, and the question the lesson omitted. The next sequence shows the trainer's request, three actual WebMCP calls, the exact branch input, OpenScene at revision two, the learner's German choice, the unlocked response clip, and the trainer's Keep or Undo decision.
 
 The film displays the trainer's request as an editorial card. The following split view shows the captured ChatGPT and OpenScene browser session, with privacy-cropped jump cuts that enlarge the recorded tool names, inputs, and page revisions. Conversation names, unrelated history, composer chrome, and model waiting time are excluded.
 
-The film has one external narrator, no scene-partner dialogue, no music, no click track, no generated room noise, and no visible watermark.
+The film has one English narrator. The synthetic scene partner does not speak, lip-sync, or perceive the learner. The film has no music, click track, generated room noise, or visible watermark.
 
 ## Potential use
 
@@ -78,7 +78,7 @@ The submission demonstrates one complete mobility-and-language path and the auth
 
 ## Scope and disclosure
 
-The station project is a fictional at-home exercise with a synthetic scene partner and fixed lesson data. Live travel, speech recognition, and character perception are outside this prototype.
+The station project is a fictional at-home exercise with a silent synthetic scene partner and fixed lesson data. Live travel, speech recognition, lip-sync, and character perception are outside this prototype.
 
 Source imagery was generated with OpenAI image generation. Motion is an editorial FFmpeg construction from retained source images and keyframes. The source repository contains the source assets, provenance record, reconstruction steps, tests, and MIT license.
 
@@ -91,10 +91,10 @@ Source imagery was generated with OpenAI image generation. Motion is an editoria
 - [x] Deploy the frozen candidate and verify unrestricted access from a clean session.
 - [x] Push the frozen source, assets, instructions, tests, and visible MIT license to the public repository.
 - [x] Authentic native ChatGPT capture exists with privacy crop and same-page mutation evidence.
-- [x] Final 100-second demo render and English captions are prepared at the paths above.
+- [x] Final 119-second demo render and English captions are prepared at the paths above.
 - [x] Five release screenshots are prepared in `assets/submission/screenshots/`.
 - [x] Upload the frozen demo to YouTube and attach the English caption track.
 - [x] Devpost fields contain the final live URL, repository URL, video URL, description, and images.
-- [ ] Owner review and the final Devpost Submit action.
+- [x] Owner review and authorization for the final Devpost Submit action.
 
-The final Devpost Submit action remains held for the owner.
+The final Devpost entry must still be read back after submission before it is considered complete.

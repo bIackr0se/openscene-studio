@@ -1,14 +1,14 @@
 # OpenScene Studio
 
-[Live app](https://openscene-webmcp.jijou-leo40.chatgpt.site/) · [100-second demo](https://youtu.be/v5wYFyt5SgM) · [Public source](https://github.com/bIackr0se/openscene-studio) · [MIT license](LICENSE)
+[Live app](https://openscene-webmcp.jijou-leo40.chatgpt.site/) · [119-second demo](https://youtu.be/KL9hbK2zbCU) · [Public source](https://github.com/bIackr0se/openscene-studio) · [MIT license](LICENSE)
 
-The final 100-second demo, deployed app, and complete MIT-licensed source are public at the links above.
+The final 119-second demo, deployed app, and complete MIT-licensed source are public at the links above.
 
 OpenScene Studio lets a trainer ask ChatGPT to add one missing learner turn to a video lesson already open in the browser.
 
 In this example, a German train lesson explains that the next train leaves from platform two, but it never teaches a passenger who cannot use stairs how to ask for the lift. The learner does not know the German words. ChatGPT proposes the trainer-approved question `Wo ist der Aufzug zu Gleis zwei?`. OpenScene pauses the video, waits for the learner to choose the line, and then releases the trainer-approved response clip.
 
-The trainer prepares the lesson. The learner practises at home. The filmed partner appears in the approved response clip and remains silent. This prototype uses a fictional station lesson. It provides no live travel data, wayfinding, speech recognition, character perception, or measured learning result.
+The trainer prepares the lesson. The learner practises at home. After the learner chooses the lift question, OpenScene plays the approved synthetic response clip and displays the German answer with its English meaning. The scene partner does not speak, lip-sync, or perceive the learner. This prototype uses a fictional station lesson. It provides no live travel data, wayfinding, speech recognition, character perception, or measured learning result.
 
 ## The human problem
 
@@ -91,13 +91,13 @@ The `Preview the new lift question` button is a Studio-only preview and is expli
 
 ## Release artifacts and media truth
 
-The final demo render is `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`. It is 100 seconds, with H.264 video, stereo AAC audio, and the English caption sidecar at `assets/submission/studio-demo/captions.srt`.
+The final demo render is `assets/submission/studio-demo/openscene-studio-webmcp-demo.mp4`. It is 119 seconds, with H.264 video, stereo AAC audio, and the English caption sidecar at `assets/submission/studio-demo/captions.srt`.
 
 The film opens on the lesson's recorded announcement and the missing lift question. It then shows the trainer's request and four jump cuts from the authentic privacy-cropped ChatGPT and OpenScene session. The jump cuts show the three page-tool calls, the exact branch input, revision two, and the learner pause. Conversation names, unrelated history, model waiting time, and the composer chrome are excluded. Later frames show the learner's page action and the unlocked response clip at normal playback size.
 
 The privacy-cropped native proof capture is retained locally outside the public source archive. The tracked proof template and verifier define its evidence contract. The five prepared screenshots are in `assets/submission/screenshots/`.
 
-The project uses one silent source clip and three silent response clips. Each response is an authored six-second sequence built from synthetic source imagery and retained keyframes. The separate narrator explains the demo. The scene partner does not speak or perceive the learner. There is no live travel guidance, music, click track, or generated room noise.
+The project uses one silent source clip and three silent response clips. Each response is an authored six-second sequence built from synthetic source imagery and retained keyframes. The synthetic scene partner does not speak, lip-sync, or perceive the learner. A separate English narrator explains the demo. There is no live travel guidance, music, click track, or generated room noise.
 
 ## Verify
 
